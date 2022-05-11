@@ -1,9 +1,11 @@
 {
   "name": "revelo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
-  "bin": "bin/cli",
+  "bin": {
+    "revelo": "bin/cli"
+  },
   "types": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
@@ -70,5 +72,9 @@
   },
   "scarfSettings": {
     "enabled": false
+  },
+  "directories": {
+    "example": "example",
+    "lib": "lib"
   }
 }

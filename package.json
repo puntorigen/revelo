@@ -1,0 +1,74 @@
+{
+  "name": "revelo",
+  "version": "0.0.1",
+  "description": "CLI for creating great & easy text based presentations",
+  "main": "index.js",
+  "bin": "bin/cli",
+  "types": "lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development rollup -c && npm link",
+    "build": "cross-env NODE_ENV=production rollup -c && npm link",
+    "format": "prettier --write '**/*.{js,ts}'",
+    "postinstall": "patch-package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puntorigen/revelo.git"
+  },
+  "keywords": [
+    "revelo",
+    "cli",
+    "reveal",
+    "slides",
+    "presentation"
+  ],
+  "author": "Pablo Schaffner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/puntorigen/revelo/issues"
+  },
+  "homepage": "https://github.com/puntorigen/revelo#readme",
+  "dependencies": {
+    "@concepto/console": "^1.2.67",
+    "fastify": "^3.29.0",
+    "marked": "^4.0.15",
+    "node-watch": "^0.7.3",
+    "tmp": "^0.2.1",
+    "capitalize": "^2.0.4",
+    "cli-progress": "^3.9.1",
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.0",
+    "download-file-with-progressbar": "^1.2.3",
+    "extractjs": "^0.3.1",
+    "find-root": "^1.1.0",
+    "fs-extra": "^10.0.0",
+    "node-async-exec": "^1.2.0",
+    "patch-package": "^6.4.7",
+    "pretty-ms": "^7.0.1",
+    "prompts": "^2.4.2",
+    "qid": "^0.9.12",
+    "tiny-cli-editor": "^0.1.1",
+    "tiny-timer": "^1.6.0",
+    "ts-enum-util": "^4.0.2",
+    "ts-transformer-keys": "^0.4.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@types/node": "^16.11.11",
+    "cross-env": "^7.0.2",
+    "jsdoc-to-markdown": "^7.0.0",
+    "rollup": "^2.23.1",
+    "rollup-plugin-typescript2": "^0.31.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.2"
+  },
+  "scarfSettings": {
+    "enabled": false
+  }
+}

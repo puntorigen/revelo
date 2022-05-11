@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "declaration": true,
+    "declarationDir": "./lib",
+    "declarationMap": true,
+    "target": "ES5",
+    "lib": ["ES2021.String"],
+  },
+  "exclude": ["test"]
+}

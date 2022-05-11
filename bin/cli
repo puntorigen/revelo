@@ -1,0 +1,98 @@
+#!/usr/bin/env node
+process.env.UV_THREADPOOL_SIZE=8*require('os').cpus().length;
+//const cli = require('command-line-args');
+const open_console = require('@concepto/console');
+const pkg = require('../package.json');
+const helper = require('../lib/index');
+const cmds = require('minimist')(process.argv.slice(2));
+//console.log('argumentos',cmds);
+/*if (myArgs.cpu) {
+    process.env.UV_THREADPOOL_SIZE=8*parseFloat(myArgs.cpu);
+    delete myArgs.cpu;
+}
+*/
+/* */
+(async () => {
+    // testing code here
+    //let debug = (myArgs.length>1)?eval(myArgs[1].trim()):false;
+    let x_console = new open_console();
+    let x_helper = new helper();
+    let bin_ = Object.keys(pkg.bin)[0];
+    if (typeof pkg.bin != 'object') bin_ = pkg.name;
+    
+    //let serial = await getSerial();
+    const copyright = function() {
+        x_console.out({ message:`Crafted with passion @ 2022 by ${pkg.author}.`, color:'dim' });
+    };
+    let printUsage = function(command='') {
+        if (command!='' && x_helper.usage && x_helper.usage[command]) {
+            x_console.out({ message:'Usage:', color:'brightCyan' });
+            x_console.out({ message:`${bin_} ${command} ${x_helper.signatures[command]}`, color:'green' });
+            const usage = x_helper.usage[command];
+            if (usage.length>0) {
+                console.log('');
+                x_console.out({ message:`Options for '${command}':`, color:'brightCyan' });
+                //const usage = x_helper[command+'_usage']();
+                for (const cmd of usage) {
+                    let desc = cmd.pop();
+                    if (typeof desc === 'object') desc = cmd.pop();
+                    let tabs_ = '';
+                    if (cmd.join(', ').length<16) {
+                        tabs_ = '\t\t\t';
+                    } else {
+                        tabs_ = '\t\t';
+                    }
+                    x_console.out({ message:cmd.join(', ')+tabs_+desc, color:'cyan' });    
+                }
+            }
+        } else {
+            x_console.out({ message:'Usage:', color:'brightCyan' });
+            x_console.out({ message:`${bin_} <command> [options]`, color:'yellow' });
+            console.log('');
+            x_console.out({ message:'Options:', color:'brightCyan' });
+            x_console.out({ message:'-v, --version\t\t\tOutputs the current version', color:'cyan' });
+            x_console.out({ message:'-h, --help\t\t\tOutputs usage information', color:'cyan' });
+        }
+        console.log('');
+        if (x_helper.commands) {
+            x_console.out({ message:'Commands:', color:'brightYellow' });
+            for (let cmd_ in x_helper.commands) {
+                //const usage = x_helper.usage[cmd_];
+                let breakChar = 32;
+                let fullLength = cmd_.length+1;
+                if (x_helper.signatures[cmd_].length>0) fullLength += x_helper.signatures[cmd_].trim().length;
+                const spaces = ' '.repeat(breakChar-fullLength);
+                if (x_helper.signatures[cmd_].trim().length>0) {
+                    x_console.out({ message:`${cmd_} ${x_helper.signatures[cmd_].trim()}${spaces}${x_helper.commands[cmd_].trim()}`, color:'brightCyan' });
+                } else {
+                    x_console.out({ message:`${cmd_} ${spaces}${x_helper.commands[cmd_].trim()}`, color:'brightCyan' });
+                }
+            }
+            console.log('');
+        }
+        //copyright
+        copyright();
+    };
+    //x_console.clear();
+    x_console.title({ title:`${bin_} CLI v${pkg.version}`, titleColor:'brightYellow', color:'green' });
+    if (cmds._.includes('help') || cmds.h || cmds.help || cmds._.length==0) {
+        if (cmds._[0]=='help' || cmds._.length==0) {
+            printUsage();
+        } else {
+            printUsage(cmds._[0]);
+        }
+    } else {
+        //maybe given command doesn't exist
+        try {
+            console.log('');
+            await x_helper[cmds._[0]](cmds);
+        } catch(err_cmd) {
+            console.log('There was an error',err_cmd);
+            printUsage();
+        }
+    }
+
+})().catch(err => {
+    console.error(err);
+});
+/* */

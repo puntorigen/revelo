@@ -41,9 +41,10 @@ steps we are going to see:
 ---
 # How are people's networks created ?
 {background-image:(happy people)}
-- people like to be part of similar intereses
-- people give like things that eco them
-- people follow posts they like, usually to show their followers they agree on the post.
+- people like to be part of similar interests
+- people like to be show they share similar interests
+- people like to be proud of who they have on their networks
+- people become 'friends' of their goals
 ```
 
 .. work in progress ..

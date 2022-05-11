@@ -14,7 +14,7 @@ work in progress
 work in progress
 
 ## Simple example
-work in progress
+Given the following text file:
 
 ```markdown
 --- 
@@ -45,3 +45,5 @@ steps we are going to see:
 - people give like things that eco them
 - people follow posts they like, usually to show their followers they agree on the post.
 ```
+
+.. work in progress ..

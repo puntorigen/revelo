@@ -21,7 +21,7 @@ Given the following text file:
 title: Hola bot
 author: Pablo Schaffner
 config:
-    incremental:true
+    - incremental: true
 ---
 # Hola/Hello bot
 

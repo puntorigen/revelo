@@ -1,4 +1,4 @@
---- 
+---
 title: Hola bot
 author: Pablo Schaffner
 ---
@@ -14,10 +14,20 @@ steps we are going to see:
   1. other thing
   2. other2 thing
 - what is this tool about & what does it do
+  - otra1
+  - otra2
+    - otra2b
+    - otra2c
 - how to use the tool
 - demo
 - QA
 ::: 
+
+---
+# pending tasks
+- [x] first ready ;)
+- [ ] second pending haha
+
 
 ---
 # How are people's networks created ?

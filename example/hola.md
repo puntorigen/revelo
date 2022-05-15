@@ -7,6 +7,8 @@ author: Pablo Schaffner
 is a linkedin bot to find and attract talent
 strategically using your likeminded peers
 
+!!!include(test2.md)!!!
+
 ---
 steps we are going to see:
 :::{incremental}
@@ -24,14 +26,15 @@ steps we are going to see:
 ::: 
 
 ---
+->background-color(aquamarine)
 # pending tasks
 - [x] first ready ;)
 - [ ] second pending haha
 
 
 ---
+->background(happy people)
 # How are people's networks created ?
-{background-image:(happy people)}
 - people like to be part of similar interests
 - people like to be show they share similar interests
 - people like to be proud of who they have on their networks

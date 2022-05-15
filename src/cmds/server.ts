@@ -64,22 +64,59 @@ export default class Server extends Command {
     async createPresentation(target:String) {
         slides = { slides:[], config:{} };
         const yaml = require('yaml');
+        const extractjs = require('extractjs');
         const mdSource = await fs.readFile(sourceFile,{ encoding:'utf-8' });
         //init markdown plugins
         md.use(require('markdown-it-front-matter'),(x)=>{ slides.config=yaml.parse(x) });
         md.use(require('markdown-it-revealjs'),()=>{});
-        md.use(require('markdown-it-task-lists'),()=>({ enabled:true }));
-        md.use(require('markdown-it-emoji'));
-        //pre-process specific contents
-        
-        //process
-        let parsed = md.parse(mdSource,{});
+        md.use(require('markdown-it-task-lists'),()=>({ enabled:true })); // - [ ] task
+        md.use(require('markdown-it-emoji')); // ;)
+        md.use(require('markdown-it-video')); //@[youtube](codigo)
+        md.use(require('markdown-it-include'),{ root:path.dirname(sourceFile) }); // !!!include(file.md)!!!
+        md.use(require('markdown-it-anchor').default);
+        md.use(require('markdown-it-table-of-contents'));
+        //md.use(require('markdown-it-custom-block'));
         let rendered = md.render(mdSource);
+        //post-process
+        const cheerio = require('cheerio');
+        const $ = cheerio.load(rendered,{ xmlMode:true, decodeEntities:false });
+        $('section section').each(function(this: cheerio.Element, idx, item) {
+            const item_ = $(this);
+            let content_ = item_.html();
+            // :::{cmd}
+            let extract = extractjs({ startExtract:`[`, endExtract:`]` });
+            let pattern = extract(`:::{[command]}[content]:::`);
+            let ex = pattern.extract(content_);
+            if (ex.command) {
+                if (ex.command=='incremental') {
+                    item_.html(content_.replace(pattern.interpolate(ex),ex.content));
+                    item_.find('*').each(function(this: cheerio.Element, idx, item) {
+                        const item2_ = $(this);
+                        item2_.addClass('fragment');
+                    });
+                }
+            }
+            //->[background](happy people)
+            extract = extractjs();
+            pattern = extract(`-&gt;{command}({content})`);
+            ex = pattern.extract(content_);
+            if (ex.command) {
+                item_.html(content_.replace(pattern.interpolate(ex),'')); //erase directive
+                if (ex.command=='background') {
+                    if (ex.content.indexOf('http')==-1) {
+                        const encode = require('querystring').escape;
+                        item_.attr('data-background-image',`https://source.unsplash.com/random?${encode(ex.content)}/1024x768`);
+                    } else {
+                        item_.attr('data-background-image',ex.content);
+                    }
+                } else if (ex.command=='background-color') {
+                    item_.attr('data-background-color',ex.content);
+                }
+            }
+            //console.log('extraction',ex);
+        });
+        rendered = $.html();
         this.x_console.out({message:'md rendered',data:{rendered, slides} });
-        await this.finish(300);
-
-        //console.log(parsed);
-        //this.debug('slides',{slides,num:slides.slides.length});
     }
 
     async process() {

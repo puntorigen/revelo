@@ -20,8 +20,6 @@ Given the following text file:
 --- 
 title: Hola bot
 author: Pablo Schaffner
-config:
-    - incremental: true
 ---
 # Hola/Hello bot
 
@@ -30,17 +28,18 @@ strategically using your likeminded peers
 
 ---
 steps we are going to see:
+->background-color(blue)
 :::{incremental}
 - how we create people networks
 - what is this tool about & what does it do
 - how to use the tool
-- demo
+- demo :-)
 - QA
 ::: 
 
 ---
 # How are people's networks created ?
-{background-image:(happy people)}
+->background-image(happy people)
 - people like to be part of similar interests
 - people like to be show they share similar interests
 - people like to be proud of who they have on their networks

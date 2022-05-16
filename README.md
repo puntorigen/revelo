@@ -21,13 +21,13 @@ The CLI includes 3 commands:
 The server command takes the given text file (its based on markdown, but can have any extension), generates a temporal directory with the generated presentation and serves it on localhost. It supports hot reloading out of the box, so if you save any changes to the given text file, automatically refreshes the browser session with the updates.
 It supports several optional parameters, being the most relevant:
 
-**--public** 
+**--public**<br/> 
  If you add the parameter --public, it also launches an ngrok session tunneling for public access to the presentation, giving you a public url for you to share. The tunnel lasts for about 1 hour.
 
-**--no-browser**
-By default the server command attempts to open your default web browser with the presentation. This argument, overwrites that.
+**--no-browser**<br/>
+By default the server command attempts to open your default web browser with the presentation. This argument overwrites that.
 
-_(work in progress)_
+_.. work in progress .._
 
 
 ## Text File Format

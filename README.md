@@ -9,7 +9,7 @@ npx revelo [command] file [options]
 ```
 
 ## Summary
-Generate a **cool presentation** with nothing more than NodeJS and a simple text file. The CLI includes a server with **hot browser reloading support**, **public url** access thanks to ngrok and an export command which can render the presentation as a **PDF, GIF or MP4 movie**. All of this can be tracked within github version's control and executed within any termianl or within a **Github workflow**; this way you can include self-generating presentations within your repos!
+Generate a **cool presentation** with nothing more than NodeJS and a simple text file. The CLI includes a server with **hot browser reloading support**, **public url access thanks** to ngrok and an export command which can render the presentation as a **PDF, GIF or MP4 movie**. All of this can be tracked within github version's control and executed within any terminal or within a **Github workflow**; this way you can include self-generating presentations within your repos!
 
 ## Commands
 The CLI includes 3 commands:

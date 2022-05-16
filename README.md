@@ -1,7 +1,7 @@
 <img width="375" alt="logo" src="https://user-images.githubusercontent.com/57605485/167906263-89ae1d2f-29b1-4c5b-89da-e755077144c2.png"><br/>
 CLI for creating rapid (& great) presentations just using the terminal!<br/>
 
-Now you can be anywhere and deliver great looking presentations! on any OS, on any computer, just before a meeting, and using a simple text file! From there it'll generate a server based presentation with your slides, a PDF or even a movie!<br/>
+Now you can be anywhere and deliver great looking presentations! on any OS, on any computer, just before a meeting, and using a simple text file! From there it'll generate a server based presentation with your slides, a PDF or even a movie!<br/><br/>
 
 # Run without installing it
 ```terminal

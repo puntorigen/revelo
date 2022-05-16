@@ -123,12 +123,26 @@ export default class presentation {
             $('div[class=reveal]').each(function(this: cheerio.Element, idx, item) {
                 $(this).replaceWith(rendered);
             });
-            await fs.writeFile(target, $.html(), 'utf-8', {
+            //add front matter config as Reveal.configure
+            if (!this.isObjEmpty(config)) {
+                let last_script = $('script').last().html();
+                last_script += `\n\t\t\tReveal.configure(${JSON.stringify(config)});`;
+                $('script').last().html(last_script);
+            }
+            let to_render = $.html();
+
+            await fs.writeFile(target, to_render, 'utf-8', {
                 encoding: 'utf8',
                 flag: 'w'
             })
         }
         //debug
         //this.x_console.out({message:'md rendered',data:{rendered, slides} });
+    }
+    
+    isObjEmpty(obj) {
+        //fastest algorithm
+        for (let x in obj) return false;
+        return true;
     }
 }

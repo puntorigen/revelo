@@ -10,5 +10,6 @@ export default class presentation {
     createPresentation(target: String, options?: {
         fragments: boolean;
     }): Promise<void>;
+    isObjEmpty(obj: any): boolean;
 }
 //# sourceMappingURL=presentation.d.ts.map

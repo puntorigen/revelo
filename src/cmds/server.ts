@@ -75,8 +75,7 @@ export default class Server extends Command {
         spinner.start('preparing presentation ..');
         const reveal = await this.presentation.baseReveal(tmpdir);
         //console.log(reveal);
-        spinner.succeed('presentation ready');
-        spinner.start('generating presentation');
+        spinner.text('generating presentation');
         await this.presentation.createPresentation(liveUrl,reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
         spinner.succeed('presentation ready');
         //monitor generated files for browser reload
@@ -92,8 +91,10 @@ export default class Server extends Command {
         const serverLink = ansi.link(server,server);
         spinner.succeed(`server listening on #${serverLink}#`);
         //open browser
-        const open = require('open');
-        await open(server)
+        if ((this.arg.browser && this.arg.browser==false) || typeof this.arg.browser === 'undefined') {
+            const open = require('open');
+            await open(server)
+        }
         //monitor given md file changes
         const watch = require('node-watch');
         watch(path.dirname(sourceFile),{},async (evt,name)=>{

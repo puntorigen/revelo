@@ -48,7 +48,7 @@ export default class Server extends Command {
         //console.log(reveal);
         spinner.succeed('prepared');
         spinner.start('generating presentation');
-        await this.presentation.createPresentation(reveal.presentation,{ fragments:true });
+        await this.presentation.createPresentation(reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
         spinner.succeed('presentation ready');
         //monitor generated files for browser reload
         spinner.start('starting server');

@@ -39,14 +39,14 @@ export default class presentation {
         };
     }
 
-    async createPresentation(target:String,options:{ fragments:boolean }={ fragments:true }) {
+    async createPresentation(target:String,options:any) {
         const md = require('markdown-it')();
         const yaml = require('yaml');
         const extractjs = require('extractjs');
         const mdSource = await fs.readFile(this.sourceFile,{ encoding:'utf-8' });
         let config = {};
         //init markdown plugins
-        md.use(require('markdown-it-front-matter'),(x)=>{ config=yaml.parse(x) });
+        md.use(require('markdown-it-front-matter'),(x)=>{ config={...yaml.parse(x),...options} });
         md.use(require('markdown-it-revealjs'),()=>{});
         md.use(require('markdown-it-task-lists'),()=>({ enabled:true })); // - [ ] task
         md.use(require('markdown-it-emoji')); // ;)
@@ -70,15 +70,13 @@ export default class presentation {
                 if (ex.command) {
                     if (ex.command=='incremental') {
                         let $2 = cheerio.load(ex.content,{ xmlMode:true, decodeEntities:false });
-                        if (options.fragments) {
-                            $2('*').each(function(this: cheerio.Element, idx, item) {
-                                const item2_ = $(this);
-                                if (item2_[0].name!='ol' && item2_[0].name!='ul') {
-                                    item2_.addClass('fragment');
-                                    item2_.addClass('fade-up');
-                                }
-                            });
-                        }
+                        $2('*').each(function(this: cheerio.Element, idx, item) {
+                            const item2_ = $(this);
+                            if (item2_[0].name!='ol' && item2_[0].name!='ul') {
+                                item2_.addClass('fragment');
+                                item2_.addClass('fade-up');
+                            }
+                        });
                         item_.html(content_.replace(pattern.interpolate(ex),$2.html()));
                     }
                 }

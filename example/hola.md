@@ -1,10 +1,11 @@
 ---
 title: Hola bot
 author: Pablo Schaffner
+autoSlide: true
 ---
 # Hola/Hello bot
 ->background[robot,0.2]
-
+->wait[2000]
 is a linkedin bot to find and attract talent
 strategically using your likeminded peers
 
@@ -13,16 +14,13 @@ strategically using your likeminded peers
 ---
 ->background-color[rgb(70,70,255)]
 ->transition[zoom]
+->wait[3000]
 ### steps we are going to see:
 :::{incremental}
 - how we create people networks
   1. other thing
   2. other2 thing
 - what is this tool about & what does it do
-  - otra1
-  - otra2
-    - otra2b
-    - otra2c
 - how to use the tool
 - demo
 ::: 

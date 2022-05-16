@@ -1,53 +1,23 @@
-import Command from '../common/command'
-import Helper from '../common/helper'
-import Presentation from '../common/presentation'
-import ansi from 'ansi-escapes'
-
+let firstReveal = '';
 const fs = require('fs').promises;
 const path = require('path');
-const emoji = require('node-emoji');
-const helper = new Helper();
-const promisify = require('util').promisify;
-let firstReveal = '';
-let sourceFile = '', tmpdir = '';
-let slides:any = {};
 
-//starts a local web server with the presentation
-export default class Server extends Command {
-    presentation: any
+export default class presentation {
+    x_console: any
+    sourceFile: string
 
-    async init() {
-        //@todo read this values from a theme.json file
-        this.setColorTokens({
-            '*':'yellow',
-            '#':'cyan',
-            '@':'green',
-            '|':'brightRed'
-        });
-        let file = '';
-        if (this.arg._.length==0) file = await this.ask(`Please enter the filename for the DB backup:`);
-        if (this.arg._.length>0) file = this.arg._.shift();
-        sourceFile = path.join(process.cwd(),file);
-        this.presentation = new Presentation(sourceFile);
-        try {
-            await fs.stat(sourceFile)
-            const dir = promisify(require('tmp').dir);
-            tmpdir = await dir();
-            //console.log('tmpdir',tmpdir); 
-            return true;
-        } catch {
-            this.log(`Error: the given file doesn't exist`);
-            return false;
-        }
+    constructor(sourcefile) {
+        this.x_console = new (require('@concepto/console'))()
+        this.sourceFile = sourcefile;
     }
-/*
+
     async baseReveal(directory) {
         //get https://github.com/hakimel/reveal.js/archive/master.zip
         //unzip on tmp directory
         const dl = require('download-file-with-progressbar');
         const asPromise = ()=>new Promise((resolve,reject)=>{
             const dd = dl('https://github.com/hakimel/reveal.js/archive/master.zip',{
-                dir: tmpdir,
+                dir: directory,
                 onDone: (info)=>{
                     resolve(info);
                 },
@@ -69,19 +39,19 @@ export default class Server extends Command {
         };
     }
 
-    async createPresentation(target:String) {
-        slides = { slides:[], config:{} };
+    async createPresentation(target:String,options:{ fragments:boolean }={ fragments:true }) {
         const md = require('markdown-it')();
         const yaml = require('yaml');
         const extractjs = require('extractjs');
-        const mdSource = await fs.readFile(sourceFile,{ encoding:'utf-8' });
+        const mdSource = await fs.readFile(this.sourceFile,{ encoding:'utf-8' });
+        let config = {};
         //init markdown plugins
-        md.use(require('markdown-it-front-matter'),(x)=>{ slides.config=yaml.parse(x) });
+        md.use(require('markdown-it-front-matter'),(x)=>{ config=yaml.parse(x) });
         md.use(require('markdown-it-revealjs'),()=>{});
         md.use(require('markdown-it-task-lists'),()=>({ enabled:true })); // - [ ] task
         md.use(require('markdown-it-emoji')); // ;)
         md.use(require('markdown-it-video')); //@[youtube](codigo)
-        md.use(require('markdown-it-include'),{ root:path.dirname(sourceFile) }); // !!!include(file.md)!!!
+        md.use(require('markdown-it-include'),{ root:path.dirname(this.sourceFile) }); // !!!include(file.md)!!!
         md.use(require('markdown-it-anchor').default);
         md.use(require('markdown-it-table-of-contents'));
         //md.use(require('markdown-it-custom-block'));
@@ -100,13 +70,15 @@ export default class Server extends Command {
                 if (ex.command) {
                     if (ex.command=='incremental') {
                         let $2 = cheerio.load(ex.content,{ xmlMode:true, decodeEntities:false });
-                        $2('*').each(function(this: cheerio.Element, idx, item) {
-                            const item2_ = $(this);
-                            if (item2_[0].name!='ol' && item2_[0].name!='ul') {
-                                item2_.addClass('fragment');
-                                item2_.addClass('fade-up');
-                            }
-                        });
+                        if (options.fragments) {
+                            $2('*').each(function(this: cheerio.Element, idx, item) {
+                                const item2_ = $(this);
+                                if (item2_[0].name!='ol' && item2_[0].name!='ul') {
+                                    item2_.addClass('fragment');
+                                    item2_.addClass('fade-up');
+                                }
+                            });
+                        }
                         item_.html(content_.replace(pattern.interpolate(ex),$2.html()));
                     }
                 }
@@ -130,6 +102,8 @@ export default class Server extends Command {
                         }
                     } else if (ex.command=='background-color') {
                         item_.attr('data-background-color',ex.content);
+                    } else if (ex.command=='sleep' || ex.command=='wait') {
+                        item_.attr('data-autoslide',ex.content);
                     } else if (ex.command=='transition') {
                         item_.attr('data-transition',ex.content);
                     }
@@ -156,52 +130,5 @@ export default class Server extends Command {
         }
         //debug
         //this.x_console.out({message:'md rendered',data:{rendered, slides} });
-    }*/
-
-    async process() {
-        const spinner = this.x_console.spinner();
-        spinner.start('preparing presentation ..');
-        const reveal = await this.presentation.baseReveal(tmpdir);
-        console.log(reveal);
-        spinner.succeed('prepared');
-        spinner.start('generating presentation');
-        await this.presentation.createPresentation(reveal.presentation,{ fragments:true });
-        spinner.succeed('presentation ready');
-        //monitor generated files for browser reload
-        spinner.start('starting server');
-        const live = require('livereload');
-        const liveServer = live.createServer();
-        liveServer.watch(reveal.path); //watch generated folder
-        //launch server, monitor filechanges
-        let express = require('express');
-        let app = express();
-        app.use(express['static'](reveal.path));
-        app.listen(3000);
-        const serverLink = ansi.link('http://127.0.0.1:3000','http://127.0.0.1:3000');
-        spinner.succeed(`server listening on #${serverLink}#`);
-        //open browser
-        const open = require('open');
-        await open('http://127.0.0.1:3000')
-        //monitor given md file changes
-        const watch = require('node-watch');
-        watch(path.dirname(sourceFile),{},async (evt,name)=>{
-            spinner.start('file change detected! @updating@');
-            try {
-                await this.presentation.createPresentation(reveal.presentation);
-                spinner.succeed('presentation #updated!#');
-            } catch(err) {
-                spinner.fail('|error rendering update| check source file');
-            }
-        });
-        //detect abort process by user
-        process.on('SIGINT', async()=>{
-            //clean tmpdir
-            spinner.start('|EXIT detected|! Cleaning tmp files ..');
-            await fs.rm(tmpdir, { recursive:true });
-            spinner.succeed(`|exit ready!|, @have a nice day!@ ${emoji.get('smile')}`);
-            //exit
-            this.finish(10);
-        });
     }
-
 }

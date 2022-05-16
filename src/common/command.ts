@@ -42,9 +42,11 @@ export default class Command {
     
     finish(exitcode?:number) {
         // closing script
-        console.log('\n');
-        helper_.copyright()
-        if (exitcode) process.exit(exitcode);
+        if (exitcode) {
+            console.log('\n');
+            helper_.copyright()
+            process.exit(exitcode);
+        }
     }
     
     async ask(question:string,validation?:any) {

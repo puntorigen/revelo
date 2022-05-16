@@ -1,10 +1,10 @@
 <img width="375" alt="logo" src="https://user-images.githubusercontent.com/57605485/167906263-89ae1d2f-29b1-4c5b-89da-e755077144c2.png"><br/>
-CLI for creating rapid (& great) presentations just using the terminal!<br/><br/>
+CLI for creating rapid (& great) presentations just using the terminal!<br/>
 
 Now you can be anywhere; on any OS, on any computer, just before a meeting, even within a Github action! and create a great presentation just using a single text file!
-<br/><br/>
+<br/>
 
-Just create a markdown text file with your slides and it'll create for you a great presentation, which you can show it using provided server and your browser, as a PDF file or even generate it as a video!
+Just create a markdown text file with your slides and it'll create for you a great presentation, which you can show it using provided server and your browser, as a PDF file or even generate it as a video!<br/><br/>
 
 # Run without installing it
 ```terminal

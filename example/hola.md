@@ -34,7 +34,7 @@ strategically using your likeminded peers
 
 
 ---
-->background[mothers,0.2]
+->background[flowers,0.2]
 ## How are people's networks created ?
 :::{incremental}
 - people like to be part of similar interests

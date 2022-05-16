@@ -20,7 +20,9 @@ export default class revelo {
 
     constructor(arg: { silent?: boolean } = { silent: true }) {}
 
-    @command(`Creates a browser based presentation and starts a local web server`,[],'[file]')
+    @command(`Creates a browser based presentation and starts a local web server`,[
+        [   '-w',   '--public',     'If defined, gives your machine a public url'  ]
+    ],'[file]')
     async server(arg: any) {
         await (new cmds.Server(arg)).run();
     }

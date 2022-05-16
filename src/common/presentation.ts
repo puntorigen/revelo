@@ -39,7 +39,7 @@ export default class presentation {
         };
     }
 
-    async createPresentation(target:String,options:any) {
+    async createPresentation(serverUrl:String,target:String,options:any) {
         const md = require('markdown-it')();
         const yaml = require('yaml');
         const extractjs = require('extractjs');
@@ -110,7 +110,10 @@ export default class presentation {
             //console.log('extraction',ex);
         });
         rendered = $.html();
-        rendered += `<script src="http://127.0.0.1:35729/livereload.js?snipver=1" async="" defer=""></script>`;
+        if (serverUrl.indexOf('loca.lt')==-1) {
+            //if serverUrl is not localtunnel (loca.lt), enable hot-reload
+            rendered += `<script src="${serverUrl}/livereload.js?snipver=1" async="" defer=""></script>`;
+        }
         //rendered += ``;
         //update index.html file received on arg
         if (target!='') {
@@ -128,7 +131,6 @@ export default class presentation {
                 $('script').last().html(last_script);
             }
             let to_render = $.html();
-
             await fs.writeFile(target, to_render, 'utf-8', {
                 encoding: 'utf8',
                 flag: 'w'

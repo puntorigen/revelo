@@ -25,9 +25,17 @@ export default class Server extends Command {
             '|':'brightRed'
         });
         let file = '';
-        if (this.arg._.length==0) file = await this.ask(`Please enter the filename for the DB backup:`);
-        if (this.arg._.length>0) file = this.arg._.shift();
-        sourceFile = path.join(process.cwd(),file);
+        try {        
+            if (this.arg._.length==0) file = await this.ask(`Please enter the filename with the presentation:`);
+            if (this.arg._.length>0) file = this.arg._.shift();
+            sourceFile = path.join(process.cwd(),file);
+        } catch(errLoad) {
+            sourceFile = '';
+        }
+        if (file=='' || sourceFile=='') {
+            this.x_console.out({ message:`|Error! No file given! Bye bye!|` });
+            await this.finish(304);
+        }
         this.presentation = new Presentation(sourceFile);
         try {
             await fs.stat(sourceFile)
@@ -43,12 +51,33 @@ export default class Server extends Command {
 
     async process() {
         const spinner = this.x_console.spinner();
+        const tunnel = require('localtunnel');
+        let server = `http://127.0.0.1:3000`;
+        let liveUrl = `http://127.0.0.1:35729`;
+        if (this.arg.public) {
+            const random = (min, max) => {  
+                return Math.floor(
+                    Math.random() * (max - min + 1) + min
+                )
+            };
+            //starts tunnel
+            spinner.start('preparing public access ..');
+            try {
+                server = (await tunnel({ port:3000, subdomain:'revelo'+random(100,999) })).url;
+                spinner.text('preparing remote hot-reloading support');
+                liveUrl = (await tunnel({ port:35729, subdomain:'revelo'+random(100,999) })).url;
+                spinner.succeed('public access prepared! (hot-reloading disabled)');
+                //console.log('public urls',server,liveUrl);
+            } catch(errRemote) {
+                spinner.fail('public access failed!');
+            }
+        }
         spinner.start('preparing presentation ..');
         const reveal = await this.presentation.baseReveal(tmpdir);
         //console.log(reveal);
-        spinner.succeed('prepared');
+        spinner.succeed('presentation ready');
         spinner.start('generating presentation');
-        await this.presentation.createPresentation(reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
+        await this.presentation.createPresentation(liveUrl,reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
         spinner.succeed('presentation ready');
         //monitor generated files for browser reload
         spinner.start('starting server');
@@ -60,26 +89,34 @@ export default class Server extends Command {
         let app = express();
         app.use(express['static'](reveal.path));
         app.listen(3000);
-        const serverLink = ansi.link('http://127.0.0.1:3000','http://127.0.0.1:3000');
+        const serverLink = ansi.link(server,server);
         spinner.succeed(`server listening on #${serverLink}#`);
         //open browser
         const open = require('open');
-        await open('http://127.0.0.1:3000')
+        await open(server)
         //monitor given md file changes
         const watch = require('node-watch');
         watch(path.dirname(sourceFile),{},async (evt,name)=>{
             spinner.start('file change detected! @updating@');
             try {
-                await this.presentation.createPresentation(reveal.presentation);
+                await this.presentation.createPresentation(liveUrl,reveal.presentation);
                 spinner.succeed('presentation #updated!#');
             } catch(err) {
                 spinner.fail('|error rendering update| check source file');
+                this.debug('fail to update presentation',err);
             }
         });
         //detect abort process by user
         process.on('SIGINT', async()=>{
-            //clean tmpdir
             spinner.start('|EXIT detected|! Cleaning tmp files ..');
+            //stops tunnel
+            if (this.arg.public) {
+                /*try {
+                    await tunnel.disconnect();
+                } catch(errN) {
+                }*/
+            }
+            //clean tmpdir
             await fs.rm(tmpdir, { recursive:true });
             spinner.succeed(`|exit ready!|, @have a nice day!@ ${emoji.get('smile')}`);
             //exit

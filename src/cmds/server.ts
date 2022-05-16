@@ -1,8 +1,10 @@
 import Command from '../common/command'
 import Helper from '../common/helper'
+import ansi from 'ansi-escapes'
 
 const fs = require('fs').promises;
 const path = require('path');
+const emoji = require('node-emoji');
 const helper = new Helper();
 const promisify = require('util').promisify;
 let firstReveal = '';
@@ -18,7 +20,7 @@ export default class Server extends Command {
             '*':'yellow',
             '#':'cyan',
             '@':'green',
-            '!':'brightRed'
+            '|':'brightRed'
         });
         let file = '';
         if (this.arg._.length==0) file = await this.ask(`Please enter the filename for the DB backup:`);
@@ -86,39 +88,48 @@ export default class Server extends Command {
         let $ = cheerio.load(rendered,{ xmlMode:true, decodeEntities:false });
         $('section section').each(function(this: cheerio.Element, idx, item) {
             const item_ = $(this);
-            let content_ = item_.html();
-            // :::{cmd}
-            let extract = extractjs({ startExtract:`[`, endExtract:`]` });
-            let pattern = extract(`:::{[command]}[content]:::`);
-            let ex = pattern.extract(content_);
-            if (ex.command) {
-                if (ex.command=='incremental') {
-                    item_.html(content_.replace(pattern.interpolate(ex),ex.content));
-                    item_.find('*').each(function(this: cheerio.Element, idx, item) {
-                        const item2_ = $(this);
-                        item2_.addClass('fragment');
-                    });
+            for (let x=0;x<10;x++) {
+                let content_ = item_.html();
+                // :::{cmd}
+                let extract = extractjs({ startExtract:`[`, endExtract:`]` });
+                let pattern = extract(`:::{[command]}[content]:::`);
+                let ex = pattern.extract(content_);
+                if (ex.command) {
+                    if (ex.command=='incremental') {
+                        let $2 = cheerio.load(ex.content,{ xmlMode:true, decodeEntities:false });
+                        $2('*').each(function(this: cheerio.Element, idx, item) {
+                            const item2_ = $(this);
+                            if (item2_[0].name!='ol' && item2_[0].name!='ul') {
+                                item2_.addClass('fragment');
+                                item2_.addClass('fade-up');
+                            }
+                        });
+                        item_.html(content_.replace(pattern.interpolate(ex),$2.html()));
+                    }
                 }
-            }
-            //->[background](happy people)
-            extract = extractjs();
-            pattern = extract(`-&gt;{command}({content})`);
-            ex = pattern.extract(content_);
-            if (ex.command) {
-                item_.html(content_.replace(pattern.interpolate(ex),'')); //erase directive
-                if (ex.command=='background') {
-                    if (ex.content.indexOf(',')!=-1) {
-                        item_.attr('data-background-opacity',ex.content.split(',')[1]);
-                        ex.content = ex.content.split(',')[0];
+                //->[background](happy people)
+                content_ = item_.html();
+                extract = extractjs();
+                pattern = extract(`-&gt;{command}[{content}]`);
+                ex = pattern.extract(content_);
+                if (ex.command) {
+                    item_.html(content_.replace(pattern.interpolate(ex),'')); //erase directive
+                    if (ex.command=='background') {
+                        if (ex.content.indexOf(',')!=-1) {
+                            item_.attr('data-background-opacity',ex.content.split(',')[1]);
+                            ex.content = ex.content.split(',')[0];
+                        }
+                        if (ex.content.indexOf('http')==-1) {
+                            const encode = require('querystring').escape;
+                            item_.attr('data-background-image',`https://source.unsplash.com/random?${encode(ex.content)}/1024x768`);
+                        } else {
+                            item_.attr('data-background-image',ex.content);
+                        }
+                    } else if (ex.command=='background-color') {
+                        item_.attr('data-background-color',ex.content);
+                    } else if (ex.command=='transition') {
+                        item_.attr('data-transition',ex.content);
                     }
-                    if (ex.content.indexOf('http')==-1) {
-                        const encode = require('querystring').escape;
-                        item_.attr('data-background-image',`https://source.unsplash.com/random?${encode(ex.content)}/1024x768`);
-                    } else {
-                        item_.attr('data-background-image',ex.content);
-                    }
-                } else if (ex.command=='background-color') {
-                    item_.attr('data-background-color',ex.content);
                 }
             }
             //console.log('extraction',ex);
@@ -162,24 +173,28 @@ export default class Server extends Command {
         let app = express();
         app.use(express['static'](reveal.path));
         app.listen(3000);
-        spinner.succeed('server listening on #http://127.0.0.1:3000#');
+        const serverLink = ansi.link('http://127.0.0.1:3000','http://127.0.0.1:3000');
+        spinner.succeed(`server listening on #${serverLink}#`);
+        //open browser
+        const open = require('open');
+        await open('http://127.0.0.1:3000')
         //monitor given md file changes
         const watch = require('node-watch');
         watch(path.dirname(sourceFile),{},async (evt,name)=>{
             spinner.start('file change detected! @updating@');
             try {
                 await this.createPresentation(reveal.presentation);
-                spinner.succeed('@presentation updated!@');
+                spinner.succeed('presentation #updated!#');
             } catch(err) {
-                spinner.fail('!error rendering update! check source file');
+                spinner.fail('|error rendering update| check source file');
             }
         });
         //detect abort process by user
         process.on('SIGINT', async()=>{
             //clean tmpdir
-            spinner.start('EXIT detected! Cleaning tmp files ..');
+            spinner.start('|EXIT detected|! Cleaning tmp files ..');
             await fs.rm(tmpdir, { recursive:true });
-            spinner.succeed('!exit ready!, @have a nice day@! ;)');
+            spinner.succeed(`|exit ready!|, @have a nice day!@ ${emoji.get('smile')}`);
             //exit
             this.finish(10);
         });

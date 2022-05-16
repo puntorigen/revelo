@@ -3,15 +3,17 @@ title: Hola bot
 author: Pablo Schaffner
 ---
 # Hola/Hello bot
-->background-color(green)
+->background[robot,0.2]
 
-is THE linkedin bot to find and attract talent
+is a linkedin bot to find and attract talent
 strategically using your likeminded peers
 
 !!!include(test2.md)!!!
 
 ---
-steps we are going to see:
+->background-color[rgb(70,70,255)]
+->transition[zoom]
+### steps we are going to see:
 :::{incremental}
 - how we create people networks
   1. other thing
@@ -23,20 +25,22 @@ steps we are going to see:
     - otra2c
 - how to use the tool
 - demo
-- QA
 ::: 
 
 ---
-->background-color(aquamarine)
+->transition[convex]
+->background-color[aquamarine]
 # pending tasks
 - [x] first ready ;)
 - [ ] second pending haha
 
 
 ---
-->background(mothers,0.5)
+->background[mothers,0.2]
 ## How are people's networks created ?
+:::{incremental}
 - people like to be part of similar interests
 - people like to be show they share similar interests
 - people like to be proud of who they have on their networks
 - people become 'friends' of their goals
+:::

@@ -4,14 +4,32 @@ Just create a markdown text file with your slides and it'll create for you a gre
 
 # Run without installing it
 ```terminal
-npx revelo
+npx revelo [command] file [options]
 ```
 
 ## Summary
-work in progress
+Generate a cool presentation with nothing more than NodeJS and a simple text file. The CLI includes a server with hot browser reloading, public url access thanks to ngrok and an export command which can render the presentation as a PDF, GIF or MP4 movie. All of this can be tracked within github version's control and executed within any termianl or within a Github workflow; this way you can include self-generating presentations within your repos!
 
 ## Commands
-work in progress
+The CLI includes 3 commands:
+- server
+- export
+- render
+
+### Server Command
+The server command takes the given text file (its based on markdown, but can have any extension), generates a temporal directory with the generated presentation and serves it on localhost. It supports hot reloading out of the box, so if you save any changes to the given text file, automatically refreshes the browser session with the updates.
+It supports several optional parameters, being the most relevant:
+
+--public 
+ If you add the parameter --public, it also launches an ngrok session tunneling for public access to the presentation, giving you a public url for you to share. The tunnel lasts for about 1 hour.
+
+--no-browser
+By default the server command attempts to open your default web browser with the presentation. This argument, overwrites that.
+
+(work in progress)
+
+## Text File Format
+See the wiki pages
 
 ## Simple example
 Given the following text file:
@@ -28,7 +46,8 @@ strategically using your likeminded peers
 
 ---
 steps we are going to see:
-->background-color(blue)
+->background-color[blue]
+->wait[2000]
 :::{incremental}
 - how we create people networks
 - what is this tool about & what does it do
@@ -39,11 +58,13 @@ steps we are going to see:
 
 ---
 # How are people's networks created ?
-->background-image(happy people)
+->background[happy people,0.5]
+->transition[zoom]
 - people like to be part of similar interests
 - people like to be show they share similar interests
 - people like to be proud of who they have on their networks
 - people become 'friends' of their goals
 ```
 
+Generates the following
 .. work in progress ..

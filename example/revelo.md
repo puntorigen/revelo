@@ -1,16 +1,16 @@
 ---
-autoSlide: false
 backgroundTransition: 'fade'
 ---
-# Revelo
+# Revelo <(.white)>
+->wait[3000]
 ->background-color[white]
 ->background-video[paragliding,0.8]
 
-Is a tool for creating *presentations*<(style="color:green")> using simple text files,
-based on syntax conventions <(style="color:white")>
+Is a tool for creating **presentations**<(.blue)> using simple text files,
+based on syntax conventions
 
 ---
-
+->wait[3000]
 ->background-color[black]
 ->background-video[happy people-2,0.5]
 ->transition[zoom]
@@ -24,12 +24,14 @@ based on syntax conventions <(style="color:white")>
 :::
 
 ---
-->background-video[happy people-2,0.8]
+->wait[3000]
+->background-color[black]
+->background-video[notebook-5,0.4]
 
 ## How it works:
 :::{incremental}
-- first you create a text file
-- launch using: npx revelo server yourfile.txt
+- first you create a text file <(.underline .yellow)>
+- launch using: *npx revelo server yourfile.txt*<(.blue)>
 - continue editing your file, saving to see changes
 - separate each slide with 3 dashes
 - add a deeper slide using 3 continuos equal signs
@@ -38,6 +40,7 @@ based on syntax conventions <(style="color:white")>
 
 ---
 # tables
+->wait[3000]
 
 | Name   | Amount  |
 | -----: | ------: |

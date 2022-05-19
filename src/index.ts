@@ -22,7 +22,8 @@ export default class revelo {
 
     @command(`Creates a browser based presentation and starts a local web server`,[
         [   '-w',   '--public',     'If defined, gives your machine a public url'  ],
-        [   '-q',   '--no-browser', `If defined doesn't self open the default browser when ready`  ]
+        [   '-q',   '--no-browser', `If defined doesn't self open the default browser when ready`  ],
+        [   '-a',   '--autoplay',   `Hides controls and changes slides automatically, looping at the end`  ]
     ],'[file]')
     async server(arg: any) {
         await (new cmds.Server(arg)).run();

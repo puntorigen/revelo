@@ -1,16 +1,12 @@
 import Command from '../common/command'
-import Helper from '../common/helper'
 import Presentation from '../common/presentation'
 import ansi from 'ansi-escapes'
 
 const fs = require('fs').promises;
 const path = require('path');
 const emoji = require('node-emoji');
-const helper = new Helper();
 const promisify = require('util').promisify;
-let firstReveal = '';
 let sourceFile = '', tmpdir = '';
-let slides:any = {};
 
 //starts a local web server with the presentation
 export default class Server extends Command {
@@ -77,7 +73,16 @@ export default class Server extends Command {
         //console.log(reveal); //@todo remove
         spinner.text('generating presentation');
         try {
-            let warnings = await this.presentation.createPresentation(liveUrl,reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
+            let options_:any = { hideInactiveCursor:true, pdfSeparateFragments:false };
+            if (this.arg.autoplay) options_ = {...options_,
+                ...{ 
+                    video:true, 
+                    autoSlide: true, 
+                    progress: false,
+                    loop: true,
+                    controls: false
+                }};
+            let warnings = await this.presentation.createPresentation(liveUrl,reveal.presentation,options_);
             if (warnings.length>0) {
                 spinner.warn('presentation generated with warnings:');
                 warnings.forEach((item)=>{

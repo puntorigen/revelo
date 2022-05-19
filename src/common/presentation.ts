@@ -213,6 +213,23 @@ export default class presentation {
                     $(element).html(content);
                 }
             });
+            //add tags to head: <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+            //tachyons css
+            let head_ = $('head').toArray();
+            head_.forEach(element => {
+                let item = $(element);
+                let inner_ = item.html();
+                inner_ += `<link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>\n`;
+                if (options.video) {
+                    inner_ += `<style>
+                        .playback {
+                            display: none !important;
+                        }
+                    </style>\n`;
+                };
+                item.html(inner_);
+            });
+            //write html
             let decode_ = require('decode-html');
             let to_render = $.html();
             if (usesMermaid) to_render = decode_(to_render);

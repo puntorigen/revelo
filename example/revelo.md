@@ -6,8 +6,8 @@ backgroundTransition: 'fade'
 ->background-color[white]
 ->background-video[paragliding,0.8]
 
-Is a tool for creating presentations using simple text files,
-based on syntax conventions
+Is a tool for creating *presentations*<(style="color:green")> using simple text files,
+based on syntax conventions <(style="color:white")>
 
 ---
 
@@ -23,7 +23,8 @@ based on syntax conventions
 - help people with disabilities create beautiful presentations
 :::
 
-=== 
+---
+->background-video[happy people-2,0.8]
 
 ## How it works:
 :::{incremental}

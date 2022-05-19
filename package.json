@@ -1,6 +1,6 @@
 {
   "name": "revelo",
-  "version": "0.0.5",
+  "version": "0.0.51",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
   "bin": {

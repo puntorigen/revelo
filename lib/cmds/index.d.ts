@@ -1,8 +1,8 @@
 import Server from './server';
-import PDF from './pdf';
+import Export from './export';
 declare const _default: {
     Server: typeof Server;
-    PDF: typeof PDF;
+    Export: typeof Export;
 };
 export default _default;
 //# sourceMappingURL=index.d.ts.map

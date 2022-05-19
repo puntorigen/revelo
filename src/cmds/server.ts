@@ -74,15 +74,28 @@ export default class Server extends Command {
         }
         spinner.start('preparing presentation ..');
         const reveal = await this.presentation.baseReveal(tmpdir);
-        //console.log(reveal);
+        //console.log(reveal); //@todo remove
         spinner.text('generating presentation');
-        await this.presentation.createPresentation(liveUrl,reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
-        spinner.succeed('presentation ready');
+        try {
+            let warnings = await this.presentation.createPresentation(liveUrl,reveal.presentation,{ hideInactiveCursor:true, pdfSeparateFragments:false });
+            if (warnings.length>0) {
+                spinner.warn('presentation generated with warnings:');
+                warnings.forEach((item)=>{
+                    this.x_console.out({ color:'yellow', message:`${item.type}: ${item.text}` });
+                });
+            } else {
+                spinner.succeed('presentation ready');
+            }
+        } catch(errPres) {
+            spinner.fail('presentation generation failed');
+            console.log(errPres);
+        }
         //monitor generated files for browser reload
         spinner.start('starting server');
         const live = require('livereload');
         const liveServer = live.createServer();
         liveServer.watch(reveal.path); //watch generated folder
+        //console.log('revelo path: '+reveal.path);
         //launch server, monitor filechanges
         let express = require('express');
         let app = express();

@@ -7,7 +7,7 @@ export default class presentation {
         presentation: any;
         file: any;
     }>;
-    createPresentation(serverUrl: String, target: String, options: any): Promise<void>;
+    createPresentation(serverUrl: String, target: String, options: any): Promise<any[]>;
     isObjEmpty(obj: any): boolean;
 }
 //# sourceMappingURL=presentation.d.ts.map

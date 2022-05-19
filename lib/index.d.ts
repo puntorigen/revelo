@@ -11,6 +11,6 @@ export default class revelo {
         silent?: boolean;
     });
     server(arg: any): Promise<void>;
-    pdf(arg: any): Promise<void>;
+    export(arg: any): Promise<void>;
 }
 //# sourceMappingURL=index.d.ts.map

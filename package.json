@@ -1,6 +1,6 @@
 {
   "name": "revelo",
-  "version": "0.0.44",
+  "version": "0.0.5",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
   "bin": {
@@ -43,6 +43,7 @@
     "cli-progress": "^3.9.1",
     "colors": "^1.4.0",
     "connect-livereload": "^0.6.1",
+    "decode-html": "^2.0.0",
     "dotenv": "^16.0.0",
     "download-file-with-progressbar": "^1.2.3",
     "express": "^4.18.1",
@@ -70,6 +71,7 @@
     "markdown-it-video": "^0.6.3",
     "node-async-exec": "^1.2.0",
     "node-emoji": "^1.11.0",
+    "node-pexels": "^2.0.1",
     "node-watch": "^0.7.3",
     "open": "^8.4.0",
     "patch-package": "^6.4.7",
@@ -77,6 +79,7 @@
     "pretty-ms": "^7.0.1",
     "prompts": "^2.4.2",
     "qid": "^0.9.12",
+    "simple-encryptor": "^4.0.0",
     "tiny-cli-editor": "^0.1.1",
     "tiny-timer": "^1.6.0",
     "tmp": "^0.2.1",

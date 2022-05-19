@@ -1,10 +1,11 @@
 ---
 title: Hola bot
 author: Pablo Schaffner
-autoSlide: true
+autoSlide: false
+backgroundTransition: 'fade'
 ---
 # Hola/Hello bot
-->background[robot,0.2]
+->background-video[people chatting,0.3]
 ->wait[2000]
 is a linkedin bot to find and attract talent
 strategically using your likeminded peers
@@ -13,7 +14,8 @@ strategically using your likeminded peers
 
 ---
 ->background-color[rgb(70,70,255)]
-->transition[zoom]
+->background-video[abstract colors,0.5]
+->transition[convex]
 ->wait[3000]
 ### steps we are going to see:
 :::{incremental}
@@ -26,8 +28,17 @@ strategically using your likeminded peers
 ::: 
 
 ---
+# tables
+
+| Name   | Amount  |
+| -----: | ------: |
+| Pablo | 100%   |
+| Mauro | 200%   |
+
+---
 ->transition[convex]
-->background-color[aquamarine]
+->background-color[green]
+->background-video[forrest,0.9]
 # pending tasks
 - [x] first ready ;)
 - [ ] second pending haha

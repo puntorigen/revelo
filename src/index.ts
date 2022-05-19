@@ -28,9 +28,11 @@ export default class revelo {
         await (new cmds.Server(arg)).run();
     }
 
-    @command(`Generates a PDF presentation`,[],'[file]\t')
-    async pdf(arg: any) {
-        await (new cmds.PDF(arg)).run();
+    @command(`Renders the presentation in the defined output file`,[
+        [   '-o',   '--output', `Target output file. Supports extensions: pdf,mp4,gif,ppt`  ]
+    ],'[file] [options]')
+    async export(arg: any) {
+        await (new cmds.Export(arg)).run();
     }
 
 }

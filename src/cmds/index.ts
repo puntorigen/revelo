@@ -1,7 +1,7 @@
 import Server from './server'
-import PDF from './pdf'
+import Export from './export'
 
 export default {
     Server,
-    PDF
+    Export
 }

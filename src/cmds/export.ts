@@ -1,7 +1,11 @@
 import Command from '../common/command'
+import Presentation from '../common/presentation'
 
-//generated a PDF file from the given text presentation
-export default class PDF extends Command {
+const fs = require('fs').promises;
+const path = require('path');
+
+//generated a Export file (PDF,MP4,GIF,PPT) from the given text presentation
+export default class Export extends Command {
 
     async init() {
         //@todo read this values from a theme.json file

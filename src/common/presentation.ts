@@ -60,6 +60,7 @@ export default class presentation {
         md.use(require('markdown-it-include'),{ root:path.dirname(this.sourceFile) }); // !!!include(file.md)!!!
         md.use(require('markdown-it-anchor').default);
         md.use(require('markdown-it-table-of-contents'));
+        //md.use(require('markdown-it-multimd-table'));
         md.use(require('markdown-it-attrs'),{
             leftDelimiter: '<(',
             rightDelimiter: ')>'

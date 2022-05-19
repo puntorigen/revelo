@@ -1,30 +1,35 @@
 ---
 backgroundTransition: 'fade'
+autoSlide: false
 ---
-# Revelo <(.white)>
-->wait[3000]
+
+->wait[8000]
 ->background-color[white]
-->background-video[paragliding,0.8]
+->background-video[beaches,0.9]
+
+![Logo](logo.png)<(height="200")>
+
+Revelo <(.f1 .white)>
 
 Is a tool for creating **presentations**<(.blue)> using simple text files,
 based on syntax conventions
 
 ---
-->wait[3000]
+->wait[2000]
 ->background-color[black]
 ->background-video[happy people-2,0.5]
 ->transition[zoom]
 
 ## It allows you to:
 :::{incremental}
-- focus on your contents first
-- create cool presentations on the fly
+- focus on your contents first <(.pink)>
+- create cool presentations on the fly :-D
 - generate dynamic presentations from different datasources
-- help people with disabilities create beautiful presentations
+- help people with dishabilities create beautiful presentations
 :::
 
 ---
-->wait[3000]
+->wait[1500]
 ->background-color[black]
 ->background-video[notebook-5,0.4]
 
@@ -32,17 +37,20 @@ based on syntax conventions
 :::{incremental}
 - first you create a text file <(.underline .yellow)>
 - launch using: *npx revelo server yourfile.txt*<(.blue)>
-- continue editing your file, saving to see changes
+- save and see your changes in *realtime*<(.yellow)>
 - separate each slide with 3 dashes
-- add a deeper slide using 3 continuos equal signs
 - you can also use markdown syntax if you know it
 ::: 
 
----
-# tables
-->wait[3000]
+with an image <(.light-blue)>
 
-| Name   | Amount  |
-| -----: | ------: |
-| Pablo | 100%   |
-| Mauro | 200%   |
+![Minion](https://octodex.github.com/images/minion.png)<(height="100")>
+
+---
+# with embeded youtube video
+
+@[youtube](ez_70v8PEgI)
+
+---
+# The end
+->wait[3000]

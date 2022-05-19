@@ -72,8 +72,8 @@ export default class Server extends Command {
         const reveal = await this.presentation.baseReveal(tmpdir);
         //console.log(reveal); //@todo remove
         spinner.text('generating presentation');
+        let options_:any = { hideInactiveCursor:true, pdfSeparateFragments:false };
         try {
-            let options_:any = { hideInactiveCursor:true, pdfSeparateFragments:false };
             if (this.arg.autoplay) options_ = {...options_,
                 ...{ 
                     video:true, 
@@ -105,6 +105,7 @@ export default class Server extends Command {
         let express = require('express');
         let app = express();
         app.use(express['static'](reveal.path));
+        app.use(express['static'](path.dirname(sourceFile))); //add md file within / public path as well
         app.listen(3000);
         const serverLink = ansi.link(server,server);
         spinner.succeed(`server listening on #${serverLink}#`);
@@ -118,7 +119,7 @@ export default class Server extends Command {
         watch(path.dirname(sourceFile),{},async (evt,name)=>{
             spinner.start('file change detected! @updating@');
             try {
-                await this.presentation.createPresentation(liveUrl,reveal.presentation);
+                await this.presentation.createPresentation(liveUrl,reveal.presentation,options_);
                 spinner.succeed('presentation #updated!#');
             } catch(err) {
                 spinner.fail('|error rendering update| check source file');

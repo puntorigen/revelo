@@ -37,6 +37,7 @@ export default class Render extends Command {
             this.targetFile = path.join(process.cwd(),this.arg.output);
             this.targetFormat = this.arg.output.split('.').pop().toLowerCase().trim();
         }
+        if (!this.arg.fps) this.arg.fps = 10;   //default fps
         if (file=='' || sourceFile=='') {
             this.x_console.out({ message:`|Error! No file given! Bye bye!|` });
             await this.finish(304);
@@ -79,18 +80,13 @@ export default class Render extends Command {
                         ...{ 
                             video:true, 
                             autoSlide: true, 
-                            downloadAssets: tmpdir, 
                             progress: false,
+                            controls: false,
                             loop: false,
-                            controls: false
+                            downloadAssets: tmpdir, 
+                            fps:this.arg.fps
                         }};
-            let warnings = await this.presentation.createPresentation('',reveal.presentation,options_);
-            this.presentation.on('convertToWebm:start',(data)=>{
-                this.spinner.text(`downloading video ${data}`);
-            });
-            this.presentation.on('convertToWebm:progress',(progress)=>{
-                this.spinner.text(`converting video ${progress.percent}%`);
-            });
+            let warnings = await this.presentation.createPresentation('',reveal.presentation,options_,this.spinner);
             /*
             this.presentation.on('convertToWebm:finish',(progress)=>{
                 this.spinner.text(`converting video ${progress.percent}%`);
@@ -160,7 +156,7 @@ export default class Render extends Command {
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36');
         const recorder = new PuppeteerScreenRecorder(page, {
-            fps: this.arg.fps?this.arg.fps:25,
+            fps: this.arg.fps,
             videoFrame: {
                 width: this.arg.width?this.arg.width:800,
                 height: this.arg.height?this.arg.height:600,
@@ -181,6 +177,9 @@ export default class Render extends Command {
         //end video recording
         await recorder.stop();
         await browser.close();
+        //kill browser session
+        const treekill = require('tree-kill');
+        treekill(browser.process().pid, 'SIGKILL');
         //await page.waitForTimeout(10000);
         //await sleep(20000); //test, record 10 seconds
     }

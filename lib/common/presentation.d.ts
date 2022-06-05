@@ -1,5 +1,4 @@
-declare const EventEmitter: any;
-export default class presentation extends EventEmitter {
+export default class presentation {
     x_console: any;
     sourceFile: string;
     constructor(sourcefile: any);
@@ -9,9 +8,8 @@ export default class presentation extends EventEmitter {
         presentation: any;
         file: any;
     }>;
-    convertToWebm(mp4: any, output: any): Promise<any>;
-    createPresentation(serverUrl: String, target: String, options: any): Promise<any[]>;
+    convertToWebm(mp4: any, output: any, fps?: number): Promise<any>;
+    createPresentation(serverUrl: String, target: String, options: any, spinner?: any): Promise<any[]>;
     isObjEmpty(obj: any): boolean;
 }
-export {};
 //# sourceMappingURL=presentation.d.ts.map

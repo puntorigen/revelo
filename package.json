@@ -1,6 +1,6 @@
 {
   "name": "revelo",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
   "bin": {
@@ -47,6 +47,7 @@
     "decode-html": "^2.0.0",
     "dotenv": "^16.0.0",
     "download-file-with-progressbar": "^1.2.3",
+    "event-emitter-es6": "^1.1.5",
     "express": "^4.18.1",
     "extract-zip": "^2.0.1",
     "extractjs": "^0.3.1",
@@ -87,6 +88,7 @@
     "tiny-cli-editor": "^0.1.1",
     "tiny-timer": "^1.6.0",
     "tmp": "^0.2.1",
+    "tree-kill": "^1.2.2",
     "ts-enum-util": "^4.0.2",
     "ts-transformer-keys": "^0.4.3",
     "yaml": "^2.0.1"

@@ -1,25 +1,24 @@
 let firstReveal = '';
 const fs = require('fs').promises;
 const path = require('path');
-const EventEmitter = require('events').EventEmitter;
 const random = (min, max) => {  
     return Math.floor(
         Math.random() * (max - min + 1) + min
     )
 };
 
-export default class presentation extends EventEmitter {
+export default class presentation {
     x_console: any
     sourceFile: string
 
     constructor(sourcefile) {
-        super();
         this.x_console = new (require('@concepto/console'))()
         this.sourceFile = sourcefile;
     }
 
     async downloadFile(url,directory) {
         const dl = require('download-file-with-progressbar');
+        const this_ = this;
         const asPromise = ()=>new Promise((resolve,reject)=>{
             const dd = dl(url,{
                 dir: directory,
@@ -27,7 +26,6 @@ export default class presentation extends EventEmitter {
                     resolve(info);
                 },
                 onProgress: (x)=>{
-                    this.emit('downloadFileProgress',x);
                 },
                 onError: (err)=>{
                     reject(err);
@@ -52,26 +50,24 @@ export default class presentation extends EventEmitter {
         };
     }
 
-    async convertToWebm(mp4,output) {
+    async convertToWebm(mp4,output,fps=25) {
         let ffmpeg = require('fluent-ffmpeg');
-        this.emit('convertToWebm:start',mp4);
         const asPromise = ()=>new Promise((resolve,reject)=>{
             ffmpeg(mp4) .videoCodec('libvpx')
-                        .videoBitrate(1000,true)
-                        .size('50%')
+                        .videoBitrate(700,true)
+                        .size('30%')
+                        .withFps(fps)
                         .outputOptions(
-                            '-minrate', '1000',
-                            '-maxrate', '1000',
+                            '-minrate', '700',
+                            '-maxrate', '700',
                             '-threads', '8',
                             '-flags', '+global_header',
                             '-psnr'
                         ).on('error', function(err,stdout,stderr) {
                             reject(err);
                         }).on('progress', function(progress) {
-                            this.emit('convertToWebm:progress',progress);
                             //console.log(`${progress.percent}% done`);
                         }).on('end', function(err,stdout,stderr) {
-                            this.emit('convertToWebm:finish',stdout);
                             resolve(stdout);
                         }).save(output);
         });
@@ -79,7 +75,7 @@ export default class presentation extends EventEmitter {
         return down;
     }
 
-    async createPresentation(serverUrl:String,target:String,options:any) {
+    async createPresentation(serverUrl:String,target:String,options:any,spinner?) {
         const md = require('markdown-it')();
         const yaml = require('yaml');
         const extractjs = require('extractjs');
@@ -111,6 +107,7 @@ export default class presentation extends EventEmitter {
         const cheerio = require('cheerio');
         let $ = cheerio.load(rendered,{ xmlMode:true, decodeEntities:false });
         const sections = $('section section').toArray();
+        let videos_ = 0;
         //$('section section').each(function(this: cheerio.Element, idx, item) {
         for (let i=0; i < sections.length; i++) {
             const item_ = $(sections[i]);
@@ -184,12 +181,11 @@ export default class presentation extends EventEmitter {
                                     let just_file = random(0,10000);
                                     let new_mp4 = path.join(options.downloadAssets,'reveal.js-master',just_file + '.mp4');
                                     //const downMP4:any = await this.downloadFile(mp4,options.downloadAssets);
-                                    let ffmpeg = require('fluent-ffmpeg');
                                     let new_webm = new_mp4.replaceAll('.mp4','.webm');
-                                    console.log('video folder: '+options.downloadAssets);
-                                    //let webm = downMP4.path.replaceAll('.mp4','.webm');
-                                    //console.log(`converting mp4 (${mp4}) into webm ${new_webm}`);
-                                    let resp = await this.convertToWebm(mp4,new_webm);
+                                    let fps_ = options.fps?options.fps:25;
+                                    videos_ += 1;
+                                    if (spinner) spinner.text(`downloading & converting background-video ${videos_}`);
+                                    let resp = await this.convertToWebm(mp4,new_webm,fps_); //@refactor spinner: this is really ugly
                                     mp4 = '/'+just_file + '.webm';
                                     //console.log(`result`,resp);
                                 }

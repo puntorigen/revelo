@@ -30,10 +30,20 @@ export default class revelo {
     }
 
     @command(`Renders the presentation in the defined output file`,[
-        [   '-o',   '--output', `Target output file. Supports extensions: pdf,mp4,gif,ppt`  ]
+        [   '-o',   '--output', `Target output file. Supported extensions: .mp4 (soon: .pdf, .gif)`  ],
+        [   '-w',   '--width',  `Width (default: 1024)`  ],
+        [   '-h',   '--height', `Height (default: 768)`  ],
+        [   '-f',   '--fps',    `Frames per second (default: 25)`  ],
+        [   '-r',   '--ratio',  `Aspect ratio (default: 4:3)`  ],
+    ],'[file] [options]')
+    async render(arg: any) {
+        await (new cmds.Render(arg)).run();
+    }
+
+    @command(`Exports the presentation in the defined output file`,[
+        [   '-o',   '--output', `Target output file. Supported extensions: .ppt (soon: .key)`  ]
     ],'[file] [options]')
     async export(arg: any) {
         await (new cmds.Export(arg)).run();
     }
-
 }

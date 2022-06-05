@@ -1,10 +1,12 @@
 import Command from '../common/command';
-export default class Export extends Command {
+export default class Render extends Command {
     presentation: any;
+    spinner: any;
     targetFile: string;
     targetFormat: string;
     init(): Promise<boolean>;
     createReveal(): Promise<any>;
+    recordBrowser(url: any): Promise<void>;
     process(): Promise<void>;
 }
-//# sourceMappingURL=export.d.ts.map
+//# sourceMappingURL=render.d.ts.map

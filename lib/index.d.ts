@@ -11,6 +11,7 @@ export default class revelo {
         silent?: boolean;
     });
     server(arg: any): Promise<void>;
+    render(arg: any): Promise<void>;
     export(arg: any): Promise<void>;
 }
 //# sourceMappingURL=index.d.ts.map

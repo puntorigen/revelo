@@ -1,32 +1,33 @@
 let firstReveal = '';
 const fs = require('fs').promises;
 const path = require('path');
+const EventEmitter = require('events').EventEmitter;
 const random = (min, max) => {  
     return Math.floor(
         Math.random() * (max - min + 1) + min
     )
 };
 
-export default class presentation {
+export default class presentation extends EventEmitter {
     x_console: any
     sourceFile: string
 
     constructor(sourcefile) {
+        super();
         this.x_console = new (require('@concepto/console'))()
         this.sourceFile = sourcefile;
     }
 
-    async baseReveal(directory) {
-        //get https://github.com/hakimel/reveal.js/archive/master.zip
-        //unzip on tmp directory
+    async downloadFile(url,directory) {
         const dl = require('download-file-with-progressbar');
         const asPromise = ()=>new Promise((resolve,reject)=>{
-            const dd = dl('https://github.com/hakimel/reveal.js/archive/master.zip',{
+            const dd = dl(url,{
                 dir: directory,
                 onDone: (info)=>{
                     resolve(info);
                 },
                 onProgress: (x)=>{
+                    this.emit('downloadFileProgress',x);
                 },
                 onError: (err)=>{
                     reject(err);
@@ -34,6 +35,13 @@ export default class presentation {
             });
         });
         const down:any = await asPromise();
+        return down;
+    }
+
+    async baseReveal(directory) {
+        //get https://github.com/hakimel/reveal.js/archive/master.zip
+        //unzip on tmp directory
+        const down:any = await this.downloadFile('https://github.com/hakimel/reveal.js/archive/master.zip',directory);
         //extract zip
         const extract = require('extract-zip');
         await extract(down.path, { dir:directory });
@@ -44,15 +52,42 @@ export default class presentation {
         };
     }
 
+    async convertToWebm(mp4,output) {
+        let ffmpeg = require('fluent-ffmpeg');
+        this.emit('convertToWebm:start',mp4);
+        const asPromise = ()=>new Promise((resolve,reject)=>{
+            ffmpeg(mp4) .videoCodec('libvpx')
+                        .videoBitrate(1000,true)
+                        .size('50%')
+                        .outputOptions(
+                            '-minrate', '1000',
+                            '-maxrate', '1000',
+                            '-threads', '8',
+                            '-flags', '+global_header',
+                            '-psnr'
+                        ).on('error', function(err,stdout,stderr) {
+                            reject(err);
+                        }).on('progress', function(progress) {
+                            this.emit('convertToWebm:progress',progress);
+                            //console.log(`${progress.percent}% done`);
+                        }).on('end', function(err,stdout,stderr) {
+                            this.emit('convertToWebm:finish',stdout);
+                            resolve(stdout);
+                        }).save(output);
+        });
+        const down:any = await asPromise();
+        return down;
+    }
+
     async createPresentation(serverUrl:String,target:String,options:any) {
         const md = require('markdown-it')();
         const yaml = require('yaml');
         const extractjs = require('extractjs');
         const mdSource = await fs.readFile(this.sourceFile,{ encoding:'utf-8' });
         let replies = [];
-        let config = {};
+        let config:any = {};
         //init markdown plugins
-        md.use(require('markdown-it-front-matter'),(x)=>{ config={...yaml.parse(x),...options} });
+        md.use(require('markdown-it-front-matter'),(x)=>{ config={...yaml.parse(x),...options}; delete config.downloadAssets; });
         md.use(require('markdown-it-revealjs'),()=>{});
         md.use(require('markdown-it-task-lists'),()=>({ enabled:true })); // - [ ] task
         md.use(require('markdown-it-emoji')); // ;)
@@ -144,8 +179,23 @@ export default class presentation {
                                 replies.push({ type:'warning', text:`there are no background-videos for '${ex.content}' (omitting, slide:${i+1})` });
                             } else {
                                 let mp4 = videos.videos[chosen].video_files[0].link; // lowest quality first (@todo we should filter the array by quality) { id,quality='hd,sd',file_type,width,height,link }
+                                if (options.downloadAssets && options.downloadAssets!='') {
+                                    //download mp4 link into tmpdir, convert to webm and define as local asset
+                                    let just_file = random(0,10000);
+                                    let new_mp4 = path.join(options.downloadAssets,'reveal.js-master',just_file + '.mp4');
+                                    //const downMP4:any = await this.downloadFile(mp4,options.downloadAssets);
+                                    let ffmpeg = require('fluent-ffmpeg');
+                                    let new_webm = new_mp4.replaceAll('.mp4','.webm');
+                                    console.log('video folder: '+options.downloadAssets);
+                                    //let webm = downMP4.path.replaceAll('.mp4','.webm');
+                                    //console.log(`converting mp4 (${mp4}) into webm ${new_webm}`);
+                                    let resp = await this.convertToWebm(mp4,new_webm);
+                                    mp4 = '/'+just_file + '.webm';
+                                    //console.log(`result`,resp);
+                                }
                                 //console.log(`pexel video (chosen:${chosen})`,{mp4,raw:videos.videos[chosen].video_files[0]});
                                 //console.log(`pexels videos (chosen:${chosen})`,videos.videos[chosen]);
+                                mp4 = mp4.replaceAll('https:','http:');
                                 item_.attr('data-background-video',mp4);
                                 item_.attr('data-background-video-muted',true);
                                 item_.attr('data-background-video-loop',true);
@@ -165,7 +215,7 @@ export default class presentation {
             //console.log('extraction',ex);
         };
         rendered = $.html();
-        if (serverUrl.indexOf('loca.lt')==-1) {
+        if (serverUrl.indexOf('loca.lt')==-1 && serverUrl!='') {
             //if serverUrl is not localtunnel (loca.lt), enable hot-reload
             rendered += `<script src="${serverUrl}/livereload.js?snipver=1" async="" defer=""></script>`;
         }
@@ -183,6 +233,9 @@ export default class presentation {
             if (!this.isObjEmpty(config)) {
                 let last_script = $('script').last().html();
                 last_script += `\n\t\t\tReveal.configure(${JSON.stringify(config)});`;
+                last_script += `\nReveal.on( 'slidetransitionend', function(event) {
+                    console.log('slidetransitionend slide indexH:'+event.indexh); //,event.currentSlide
+                } );`;
                 $('script').last().html(last_script);
             }
             //add mermaidjs script support

@@ -1,0 +1,21 @@
+->wait[5000]
+->background-color[white]
+->background-video[flowers-9,0.5]
+# Hola mauro
+- uno en la **lista** mas cosas
+- otro
+
+---
+->wait[5000]
+->background-color[black]
+->background-video[mountains,0.7]
+
+otro hola
+
+---
+->wait[5000]
+->background-color[black]
+->background-video[sky,0.7]
+
+otra pantalla más
+y otra línea

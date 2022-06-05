@@ -14,8 +14,8 @@ Generate a **cool presentation** with nothing more than NodeJS and a simple text
 ## Commands
 The CLI includes 3 commands:
 - server
-- export
 - render
+- export
 
 ### Server Command
 The server command takes the given text file (its based on markdown, but can have any extension), generates a temporal directory with the generated presentation and serves it on localhost. It supports hot reloading out of the box, so if you save any changes to the given text file, automatically refreshes the browser session with the updates.
@@ -27,8 +27,16 @@ It supports several optional parameters, being the most relevant:
 **--no-browser**<br/>
 By default the server command attempts to open your default web browser with the presentation. This argument overwrites that.
 
-_.. work in progress .._
+**--autoplay**<br/>
+Removes progress bar, slider controls and automatically goes to next slide by the time defined; works almost as a movie but for the browser.
 
+### Render Command
+The render command takes the given text file (its based on markdown, but can have any extension), and generates an MP4 movie of the generated presentation on the --output file defined. Works almost as the --autoplay server argument, but saves the result as a movie. It supports several optional parameters, being the most relevant:
+
+**--output**<br/>
+Defines the target MP4 file name and location.
+
+_.. work in progress .._
 
 ## Text File Format
 See the wiki pages
@@ -37,10 +45,6 @@ See the wiki pages
 Given the following text file:
 
 ```markdown
---- 
-title: Hola bot
-author: Pablo Schaffner
----
 # Hola/Hello bot
 ->background[robot,0.2]
 
@@ -55,7 +59,7 @@ steps we are going to see:
 - how we create people networks
 - what is this tool about & what does it do
 - how to use the tool
-- demo :-)
+- demo :-) (supports emoji's)
 - QA
 ::: 
 

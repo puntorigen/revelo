@@ -1,6 +1,6 @@
 {
   "name": "revelo",
-  "version": "0.0.55",
+  "version": "0.0.57",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
   "bin": {
@@ -36,6 +36,7 @@
   "dependencies": {
     "@concepto/console": "^1.2.67",
     "@datatraccorporation/markdown-it-mermaid": "github:DatatracCorporation/markdown-it-mermaid",
+    "@gumlet/gif-resize": "^1.3.1",
     "@types/cheerio": "^0.22.31",
     "ansi-escapes": "^5.0.0",
     "capitalize": "^2.0.4",
@@ -71,7 +72,6 @@
     "markdown-it-table-of-contents": "^0.6.0",
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-video": "^0.6.3",
-    "node-async-exec": "^1.2.0",
     "node-emoji": "^1.11.0",
     "node-pexels": "^2.0.1",
     "node-watch": "^0.7.3",
@@ -84,6 +84,7 @@
     "puppeteer-core": "^14.2.1",
     "puppeteer-screen-recorder": "^2.0.2",
     "qid": "^0.9.12",
+    "reading-time": "^1.5.0",
     "simple-encryptor": "^4.0.0",
     "tiny-cli-editor": "^0.1.1",
     "tiny-timer": "^1.6.0",

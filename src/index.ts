@@ -23,16 +23,18 @@ export default class revelo {
     @command(`Creates a browser based presentation and starts a local web server`,[
         [   '-w',   '--public',     'If defined, gives your machine a public url'  ],
         [   '-q',   '--no-browser', `If defined doesn't self open the default browser when ready`  ],
-        [   '-a',   '--autoplay',   `Hides controls and changes slides automatically, looping at the end`  ]
+        [   '-a',   '--autoplay',   `Hides controls and changes slides automatically, looping at the end`  ],
+        [   '-t',   '--tps',        `If --autoplay, define time per slide (in seconds, default: auto)`  ],
     ],'[file]')
     async server(arg: any) {
         await (new cmds.Server(arg)).run();
     }
 
     @command(`Renders the presentation in the defined output file`,[
-        [   '-o',   '--output', `Target output file. Supported extensions: .mp4 (soon: .pdf, .gif)`  ],
+        [   '-o',   '--output', `Target output file. Supported extensions: .mp4, .gif (soon: .pdf, .zip)`  ],
         [   '-w',   '--width',  `Width (default: 1024)`  ],
-        [   '-h',   '--height', `Height (default: 768)`  ],
+        [   '-e',   '--height', `Height (default: 768)`  ],
+        [   '-t',   '--tps',    `Time per slide (in seconds, default: auto)`  ],
         [   '-f',   '--fps',    `Frames per second (default: 25)`  ],
         [   '-r',   '--ratio',  `Aspect ratio (default: 4:3)`  ],
     ],'[file] [options]')

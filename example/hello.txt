@@ -1,0 +1,36 @@
+# Hello
+this is the first slide
+->background-color[green]
+->background[forrest,0.6]
+
+---
+# another
+->background-color[blue]
+->wait[1500]
+:::{incremental}
+- this is another slide
+- with some bullets
+- and steps
+- and emoji's ;-)
+::: 
+
+---
+## This is the third
+->background-color[white]
+->background-video[ocean,0.3]
+->transition[zoom]
+it supports video backgrounds
+
+---
+## This is the fourth
+->wait[6000]
+->background-color[white]
+->background[happy people,0.3]
+- you can have different <(.blue)> 
+- colours per line <(.green)> 
+
+---
+## The end now
+->wait[10000]
+->background-color[black]
+->background[nature,0.8]

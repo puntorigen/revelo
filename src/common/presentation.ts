@@ -53,7 +53,7 @@ export default class presentation {
     async convertToWebm(mp4,output,fps=25) {
         let ffmpeg = require('fluent-ffmpeg');
         const asPromise = ()=>new Promise((resolve,reject)=>{
-            ffmpeg(mp4) .videoCodec('libvpx')
+            ffmpeg(mp4) .videoCodec('libvpx-vp9')   //libvpx
                         .videoBitrate(700,true)
                         .size('30%')
                         .withFps(fps)
@@ -62,7 +62,8 @@ export default class presentation {
                             '-maxrate', '700',
                             '-threads', '8',
                             '-flags', '+global_header',
-                            '-psnr'
+                            '-psnr',
+                            '-lossless','1'
                         ).on('error', function(err,stdout,stderr) {
                             reject(err);
                         }).on('progress', function(progress) {
@@ -80,8 +81,8 @@ export default class presentation {
         const yaml = require('yaml');
         const extractjs = require('extractjs');
         const mdSource = await fs.readFile(this.sourceFile,{ encoding:'utf-8' });
-        let replies = [];
-        let config:any = {};
+        let replies = [], meta = { numSlides:0, slides:[], totalTime:0 };
+        let config:any = {...options};
         //init markdown plugins
         md.use(require('markdown-it-front-matter'),(x)=>{ config={...yaml.parse(x),...options}; delete config.downloadAssets; });
         md.use(require('markdown-it-revealjs'),()=>{});
@@ -107,10 +108,14 @@ export default class presentation {
         const cheerio = require('cheerio');
         let $ = cheerio.load(rendered,{ xmlMode:true, decodeEntities:false });
         const sections = $('section section').toArray();
+        meta.numSlides = sections.length; //number of slides
+        const timeToRead = require('reading-time');
         let videos_ = 0;
         //$('section section').each(function(this: cheerio.Element, idx, item) {
         for (let i=0; i < sections.length; i++) {
             const item_ = $(sections[i]);
+            let metaSlide:any = { time:timeToRead(item_.html(),{ wordsPerMinute:100 }), pictures:0, videos:0 };
+            let slideTime = 0;
             for (let x=0;x<10;x++) {
                 let content_ = item_.html();
                 // :::{cmd}
@@ -149,10 +154,12 @@ export default class presentation {
                             // @todo add support for local images
                         } else {
                             item_.attr('data-background-image',ex.content);
+                            metaSlide.pictures += 1;
                         }
                     } else if (ex.command=='background-color') {
                         item_.attr('data-background-color',ex.content);
                     } else if (ex.command=='background-video') {
+                        metaSlide.videos += 1;
                         if (ex.content.indexOf(',')!=-1) { //opacity within value
                             item_.attr('data-background-opacity',ex.content.split(',')[1]);
                             ex.content = ex.content.split(',')[0];
@@ -184,7 +191,7 @@ export default class presentation {
                                     let new_webm = new_mp4.replaceAll('.mp4','.webm');
                                     let fps_ = options.fps?options.fps:25;
                                     videos_ += 1;
-                                    if (spinner) spinner.text(`downloading & converting background-video ${videos_}`);
+                                    if (spinner) spinner.text(`downloading & converting background-video ${videos_} (fps:${fps_})`);
                                     let resp = await this.convertToWebm(mp4,new_webm,fps_); //@refactor spinner: this is really ugly
                                     mp4 = '/'+just_file + '.webm';
                                     //console.log(`result`,resp);
@@ -203,11 +210,26 @@ export default class presentation {
                         //
                     } else if (ex.command=='sleep' || ex.command=='wait') {
                         item_.attr('data-autoslide',ex.content);
+                        slideTime = parseInt(ex.content);
                     } else if (ex.command=='transition') {
                         item_.attr('data-transition',ex.content);
                     }
                 }
             }
+            if ((options.video || options.autoSlide) && slideTime==0) {
+                //if video mode, and slideTime is undefined
+                if (options.tps && options.tps=='auto') {
+                    //if tfs=auto use metaSlide.time.time arg, if not use value*1000 (secs->ms)
+                    slideTime = Math.max(metaSlide.time.time,3000); //min 3 secs
+                } else if (options.tps && parseInt(options.tps)>0) {
+                    //use value*1000
+                    slideTime = parseInt(options.tps)*1000;
+                }
+                item_.attr('data-autoslide',slideTime);
+            }
+            meta.totalTime = meta.totalTime+slideTime;
+            meta.slides.push(metaSlide);
+            //this.x_console.debug('DEBUG !! ',{slideTime,options,metaSlide,meta});
             //console.log('extraction',ex);
         };
         rendered = $.html();
@@ -217,6 +239,7 @@ export default class presentation {
         }
         //rendered += ``;
         //update index.html file received on arg
+        //this.x_console.out({ message:'THIS CONFIG PRESENTATION', data:config });
         if (target!='') {
             if (firstReveal=='') {
                 firstReveal = await fs.readFile(target,{ encoding:'utf-8' });
@@ -290,7 +313,7 @@ export default class presentation {
         }
         //debug
         //this.x_console.out({message:'md rendered',data:{rendered, slides} });
-        return replies;
+        return { warnings:replies, meta };
     }
     
     isObjEmpty(obj) {

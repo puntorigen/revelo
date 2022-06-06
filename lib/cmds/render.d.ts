@@ -5,8 +5,15 @@ export default class Render extends Command {
     targetFile: string;
     targetFormat: string;
     init(): Promise<boolean>;
-    createReveal(): Promise<any>;
-    recordBrowser(url: any): Promise<void>;
+    createReveal(): Promise<{
+        reveal: any;
+        meta: any;
+    } | {
+        reveal: any;
+        meta?: undefined;
+    }>;
+    recordBrowser(url: any, time: any): Promise<void>;
+    convertToGif(mp4: any, output: any): Promise<any>;
     process(): Promise<void>;
 }
 //# sourceMappingURL=render.d.ts.map

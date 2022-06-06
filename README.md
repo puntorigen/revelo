@@ -31,10 +31,16 @@ By default the server command attempts to open your default web browser with the
 Removes progress bar, slider controls and automatically goes to next slide by the time defined; works almost as a movie but for the browser.
 
 ### Render Command
-The render command takes the given text file and generates an MP4 movie of the generated presentation on the --output file defined. Works almost as the --autoplay server argument, but saves the result as a movie. It supports several optional parameters, being the most relevant:
+The render command takes the given text file and generates an MP4 movie or GIF animation of the generated presentation on the --output file defined. Works almost as the --autoplay server argument, but saves the result as a movie/animation. It supports several optional parameters, being the most relevant:
 
 **--output**<br/>
-Defines the target MP4 file name and location.
+Defines the target MP4/GIF file name and location.
+
+**--fps**<br/>
+Defines the frames per second. Default 25 for MP4, 5 for GIF
+
+**--tps**<br/>
+Defines the time per slide in seconds. Defaults to 'auto' which uses a time to read algo to determine the best time to wait per slide.
 
 _.. work in progress .._
 
@@ -45,32 +51,44 @@ See the wiki pages
 Given the following text file:
 
 ```markdown
-# Hola/Hello bot
-->background[robot,0.2]
-
-is a linkedin bot to find and attract talent
-strategically using your likeminded peers
+# Hello
+this is the first slide
+->background-color[green]
+->background[forrest,0.6]
 
 ---
-steps we are going to see:
+# another
 ->background-color[blue]
-->wait[2000]
+->wait[1500]
 :::{incremental}
-- how we create people networks
-- what is this tool about & what does it do
-- how to use the tool
-- demo :-) (supports emoji's)
-- QA
+- this is another slide
+- with some bullets
+- and steps
+- and emoji's ;-)
 ::: 
 
 ---
-# How are people's networks created ?
-->background[happy people,0.5]
+## This is the third
+->background-color[white]
+->background-video[ocean,0.3]
 ->transition[zoom]
-- people like to be part of similar interests
-- people like to be show they share similar interests
-- people like to be proud of who they have on their networks
-- people become 'friends' of their goals
+it supports video backgrounds
+
+---
+
+## This is the fourth
+->wait[6000]
+->background-color[white]
+->background[happy people,0.3]
+- you can have different <(.blue)> 
+- colours per line <(.green)> 
+
+---
+
+## The end now
+->wait[10000]
+->background-color[black]
+->background[nature,0.8]
 ```
 
 Generates the following presentation<br/>

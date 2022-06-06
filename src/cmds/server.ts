@@ -80,10 +80,11 @@ export default class Server extends Command {
                     autoSlide: true, 
                     progress: false,
                     loop: true,
-                    controls: false
+                    controls: false,
+                    tps: this.arg.tps?this.arg.tps:'auto'
                 }};
             let warnings = await this.presentation.createPresentation(liveUrl,reveal.presentation,options_);
-            if (warnings.length>0) {
+            if (warnings.warnings.length>0) {
                 spinner.warn('presentation generated with warnings:');
                 warnings.forEach((item)=>{
                     this.x_console.out({ color:'yellow', message:`${item.type}: ${item.text}` });

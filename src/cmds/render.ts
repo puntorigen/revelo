@@ -38,11 +38,12 @@ export default class Render extends Command {
             this.targetFormat = this.arg.output.split('.').pop().toLowerCase().trim();
         }
         if (!this.arg.fps) this.arg.fps = 10;   //default fps
+        if (!this.arg.tps) this.arg.tps = 'auto';   //default tps (10 secs)
         if (file=='' || sourceFile=='') {
             this.x_console.out({ message:`|Error! No file given! Bye bye!|` });
             await this.finish(304);
         }
-        if (!['mp4'].includes(this.targetFormat)) {
+        if (!['mp4','gif'].includes(this.targetFormat)) {
             this.log(`Error: the given output file extension (*.${this.targetFormat}*) is not currently supported (only: @.mp4@)`);
             return false;
         }
@@ -84,29 +85,32 @@ export default class Render extends Command {
                             controls: false,
                             loop: false,
                             downloadAssets: tmpdir, 
-                            fps:this.arg.fps
+                            fps:this.arg.fps,
+                            tps:this.arg.tps,
                         }};
-            let warnings = await this.presentation.createPresentation('',reveal.presentation,options_,this.spinner);
+            let presentation_ = await this.presentation.createPresentation('',reveal.presentation,options_,this.spinner);
             /*
             this.presentation.on('convertToWebm:finish',(progress)=>{
                 this.spinner.text(`converting video ${progress.percent}%`);
             });*/
-            if (warnings.length>0) {
+            if (presentation_.warnings.length>0) {
                 this.spinner.warn('presentation generated with warnings:');
-                warnings.forEach((item)=>{
+                presentation_.forEach((item)=>{
                     this.x_console.out({ color:'yellow', message:`${item.type}: ${item.text}` });
                 });
             } else {
                 this.spinner.succeed('presentation ready');
+                //this.debug('presentation debug',presentation_.meta);
             }
+            return { reveal, meta:presentation_.meta};
         } catch(errPres) {
             this.spinner.fail('presentation generation failed');
             console.log(errPres);
+            return { reveal };
         }
-        return reveal;
     }
 
-    async recordBrowser(url) {
+    async recordBrowser(url,time) {
         const puppeteer = require('puppeteer');
         //const codecs = require( 'chromium-all-codecs-bin' )()
         const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
@@ -168,12 +172,12 @@ export default class Render extends Command {
             waitUntil: 'networkidle2'
         });
         await recorder.start(this.targetFile);
-        page.on('console', async msg=> {
+        /*page.on('console', async msg=> {
             this.debug('PAGE LOG:', {type:msg._type, text:msg._text }); // get console messages (@todo to check when video ends)
-        });
+        });*/
         //idea2: goto next slide every x secs
         page.bringToFront();
-        await sleep(15000); //wait a sec
+        await sleep(time); //wait presentation duration
         //end video recording
         await recorder.stop();
         await browser.close();
@@ -184,10 +188,33 @@ export default class Render extends Command {
         //await sleep(20000); //test, record 10 seconds
     }
 
+    async convertToGif(mp4,output) {
+        let ffmpeg = require('fluent-ffmpeg');
+        const asPromise = ()=>new Promise((resolve,reject)=>{
+            ffmpeg(mp4) .outputOption("-filter_complex", `fps=${this.arg.fps},scale=${this.arg.width}:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer`)
+                        .on('error', function(err,stdout,stderr) {
+                            reject(err);
+                        }).on('progress', function(progress) {
+                            //console.log(`${progress.percent}% done`);
+                        }).on('end', function(err,stdout,stderr) {
+                            resolve(stdout);
+                        }).save(output);
+        });
+        const down:any = await asPromise();
+        return down;
+    }
+
     async process() {
-        if (this.targetFormat=='mp4') {
+        if (this.targetFormat=='mp4' || this.targetFormat=='gif') {
+            if (this.targetFormat=='gif') {
+                this.arg.fps = (this.arg.fps)?Math.max(this.arg.fps,5):5;
+                this.arg.width = this.arg.width?this.arg.width:400;
+                this.arg.height = this.arg.height?this.arg.height:300;
+                this.targetFile = this.targetFile.replaceAll('.gif','.mp4');
+            }
             //generate presentation (@todo add console.logs to reveal code to capture start/end using puppeteer)
-            const reveal = await this.createReveal();
+            const reveal_ = await this.createReveal();
+            const reveal = reveal_.reveal;
             //start local server
             this.spinner.start('preparing local server ..');
             let express = require('express'), app = express();
@@ -196,13 +223,46 @@ export default class Render extends Command {
             app.listen(3000);
             this.spinner.succeed('local server ready');
             //record browser session
-            this.spinner.start('generating video ..');
-            await this.recordBrowser('http://127.0.0.1:3000');
-            this.spinner.succeed('generated 10 sec video');
+            let time = (reveal_.meta && reveal_.meta.totalTime)?reveal_.meta.totalTime:10000;
+            let kword = 'video';
+            if (this.targetFormat=='gif') kword = 'animation';
+            this.spinner.start(`generating ${Math.round(time/1000)} secs ${kword} ..`);
+            await this.recordBrowser('http://127.0.0.1:3000',time);
+            this.spinner.succeed(`generated ${Math.round(time/1000)} secs ${kword}`);
+            //convert mp4 into gif if necessary
+            if (this.targetFormat=='gif') {
+                this.spinner.start(`creating gif animation ..`);
+                const targetGIF = this.targetFile.replaceAll('.mp4','.gif');
+                let gif_ = await this.convertToGif(this.targetFile,targetGIF);
+                this.spinner.text(`optimizing gif ..`);
+                const resize = require('@gumlet/gif-resize');
+                const buf = await fs.readFile(targetGIF);
+                const data = await resize({ optimizationLevel:3, interlaced:true })(buf);
+                //overwrite compressed gif
+                await fs.writeFile(targetGIF,data);
+                //erase original mp4 file
+                await fs.unlink(this.targetFile);
+                //
+                this.spinner.succeed(`gif ready!`);
+            }
             //clean & exit
             this.spinner.start('|Finished|! Cleaning tmp files ..');
             await fs.rm(tmpdir, { recursive:true });
             this.spinner.succeed(`|ready!|, @have a nice day!@ ${emoji.get('smile')}`);
+            //show meta table
+            if (reveal_.meta) {
+                console.log('\n');
+                this.x_console.table({
+                    title:'Meta info',
+                    color:'green',
+                    data:reveal_.meta.slides.map((item,idx)=>({
+                        slide:idx+1,
+                        secs:(item.time.time/1000).toFixed(1),
+                        pictures:item.pictures,
+                        videos:item.videos,
+                    }))
+                });
+            }
             this.finish(10);
         }
         //

@@ -1,6 +1,6 @@
 {
   "name": "revelo",
-  "version": "0.0.57",
+  "version": "0.0.58",
   "description": "CLI for creating great & easy text based presentations",
   "main": "index.js",
   "bin": {
@@ -53,6 +53,7 @@
     "extract-zip": "^2.0.1",
     "extractjs": "^0.3.1",
     "fastify": "^3.29.0",
+    "ffmpeg-static": "^5.0.0",
     "find-root": "^1.1.0",
     "fs-extra": "^10.0.0",
     "livereload": "^0.9.3",

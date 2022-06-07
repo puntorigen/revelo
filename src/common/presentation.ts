@@ -52,6 +52,8 @@ export default class presentation {
 
     async convertToWebm(mp4,output,fps=25) {
         let ffmpeg = require('fluent-ffmpeg');
+        const ffmpeg_bin = require('ffmpeg-static');
+        ffmpeg.setFfmpegPath(ffmpeg_bin);
         const asPromise = ()=>new Promise((resolve,reject)=>{
             ffmpeg(mp4) .videoCodec('libvpx-vp9')   //libvpx
                         .videoBitrate(700,true)

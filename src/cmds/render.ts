@@ -190,6 +190,8 @@ export default class Render extends Command {
 
     async convertToGif(mp4,output) {
         let ffmpeg = require('fluent-ffmpeg');
+        const ffmpeg_bin = require('ffmpeg-static');
+        ffmpeg.setFfmpegPath(ffmpeg_bin);
         const asPromise = ()=>new Promise((resolve,reject)=>{
             ffmpeg(mp4) .outputOption("-filter_complex", `fps=${this.arg.fps},scale=${this.arg.width}:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer`)
                         .on('error', function(err,stdout,stderr) {

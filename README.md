@@ -92,7 +92,6 @@ it supports video backgrounds
 ```
 
 Generates the following presentation<br/>
-![hello](https://user-images.githubusercontent.com/57605485/172093034-ae5e3f31-15d7-4311-b94f-5ba7a1aee436.gif)
-
+![hello](https://user-images.githubusercontent.com/57605485/172454198-973fc649-b6fd-483e-92dc-0d37fef0523d.gif)
 
 _.. work in progress .._

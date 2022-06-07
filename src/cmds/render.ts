@@ -37,7 +37,7 @@ export default class Render extends Command {
             this.targetFile = path.join(process.cwd(),this.arg.output);
             this.targetFormat = this.arg.output.split('.').pop().toLowerCase().trim();
         }
-        if (!this.arg.fps) this.arg.fps = 10;   //default fps
+        if (!this.arg.fps) this.arg.fps = 15;   //default fps
         if (!this.arg.tps) this.arg.tps = 'auto';   //default tps (10 secs)
         if (file=='' || sourceFile=='') {
             this.x_console.out({ message:`|Error! No file given! Bye bye!|` });
@@ -151,21 +151,34 @@ export default class Render extends Command {
         '--use-gl=egl', //swiftshader
         '--use-mock-keychain',
         ];
+        const exp_no_wait = [
+            '--enable-surface-synchronization',
+            '--run-all-compositor-stages-before-draw',
+            '--disable-threaded-animation',
+            '--disable-threaded-scrolling',
+            '--disable-checker-imaging',
+        ];
         const browser = await puppeteer.launch({
-            args:minimal_args, 
+            //args:minimal_args, 
+            args:exp_no_wait,
             headless:true, 
             //executablePath:codecs
         });
         //const browser = await puppeteer.launch({ headless:true, executablePath:codecs });
         const page = await browser.newPage();
+        await page.setViewport({
+            width: this.arg.width?this.arg.width:800,
+            height: this.arg.height?this.arg.height:600,
+            deviceScaleFactor: 1            
+        });
         await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36');
         const recorder = new PuppeteerScreenRecorder(page, {
-            fps: this.arg.fps,
+            fps: this.arg.fps,//60
             videoFrame: {
                 width: this.arg.width?this.arg.width:800,
                 height: this.arg.height?this.arg.height:600,
             },
-            aspectRatio: this.arg.ratio?this.arg.ratio:'16:9',
+            aspectRatio: this.arg.ratio?this.arg.ratio:'4:3',
         });
         await sleep(50);
         await page.goto(url, {

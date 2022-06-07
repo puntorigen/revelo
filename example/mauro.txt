@@ -17,3 +17,17 @@ otro hola
 
 otra pantalla más
 y otra línea
+
+---
+->wait[5000]
+->background-color[black]
+->background-video[beaches,0.7]
+
+una en la playa
+
+---
+->wait[7000]
+->background-color[black]
+->background-video[city,0.7]
+
+otra en la ciudad

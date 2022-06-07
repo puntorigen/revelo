@@ -56,16 +56,16 @@ export default class presentation {
         ffmpeg.setFfmpegPath(ffmpeg_bin);
         const asPromise = ()=>new Promise((resolve,reject)=>{
             ffmpeg(mp4) .videoCodec('libvpx-vp9')   //libvpx
-                        .videoBitrate(700,true)
+                        .videoBitrate(1000,true)    //700
                         .size('30%')
                         .withFps(fps)
                         .outputOptions(
-                            '-minrate', '700',
-                            '-maxrate', '700',
+                            '-minrate', '1000', //700
+                            '-maxrate', '1000',
                             '-threads', '8',
                             '-flags', '+global_header',
                             '-psnr',
-                            '-lossless','1'
+                            '-lossless','1' //1
                         ).on('error', function(err,stdout,stderr) {
                             reject(err);
                         }).on('progress', function(progress) {

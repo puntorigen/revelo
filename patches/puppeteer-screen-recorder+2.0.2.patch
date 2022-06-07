@@ -1,0 +1,37 @@
+diff --git a/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamCollector.js b/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamCollector.js
+index a68c7ca..24c4ab0 100644
+--- a/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamCollector.js
++++ b/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamCollector.js
+@@ -44,6 +44,10 @@ class pageVideoStreamCollector extends events_1.EventEmitter {
+         try {
+             await currentSession.send('Page.startScreencast', {
+                 everyNthFrame: 1,
++                format: 'jpeg',
++                quality: 91,
++                maxWidth: this.page.viewport().width,
++                maxHeight: this.page.viewport().height
+             });
+         }
+         catch (e) {
+diff --git a/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamWriter.js b/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamWriter.js
+index c7c3a91..38f6d5a 100644
+--- a/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamWriter.js
++++ b/node_modules/puppeteer-screen-recorder/build/main/lib/pageVideoStreamWriter.js
+@@ -139,7 +139,7 @@ class PageVideoStreamWriter extends events_1.EventEmitter {
+                 resolve(true);
+             });
+             outputStream.toFormat('mp4');
+-            outputStream.addOutputOptions('-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov');
++            //outputStream.addOutputOptions('-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov');
+             outputStream.pipe(writableStream);
+         });
+     }
+@@ -154,7 +154,7 @@ class PageVideoStreamWriter extends events_1.EventEmitter {
+             .aspect(this.options.aspectRatio || '4:3')
+             .inputFormat('image2pipe')
+             .inputFPS(this.options.fps)
+-            .outputOptions('-preset ultrafast')
++            .outputOptions('-preset slow') // medium, ultrafast
+             .outputOptions('-pix_fmt yuv420p')
+             .outputOptions('-minrate 1000')
+             .outputOptions('-maxrate 1000')

@@ -35,7 +35,7 @@ export default class revelo {
         [   '-w',   '--width',  `Width (default: 1024)`  ],
         [   '-e',   '--height', `Height (default: 768)`  ],
         [   '-t',   '--tps',    `Time per slide (in seconds, default: auto)`  ],
-        [   '-f',   '--fps',    `Frames per second (default: 25)`  ],
+        [   '-f',   '--fps',    `Frames per second (default: 15)`  ],
         [   '-r',   '--ratio',  `Aspect ratio (default: 4:3)`  ],
     ],'[file] [options]')
     async render(arg: any) {

@@ -42,13 +42,11 @@ Defines the frames per second. Default 25 for MP4, 5 for GIF
 **--tps**<br/>
 Defines the time per slide in seconds. Defaults to 'auto' which uses a time to read algo to determine the best time to wait per slide.
 
-_.. work in progress .._
-
 ## Text File Format
-See the wiki pages
+See the wiki pages (in progress)
 
 ## Simple example
-Given the following text file:
+Given the following text file (example/hello.txt):
 
 ```markdown
 # Hello
@@ -94,4 +92,12 @@ it supports video backgrounds
 Generates the following presentation<br/>
 ![hello](https://user-images.githubusercontent.com/57605485/172454198-973fc649-b6fd-483e-92dc-0d37fef0523d.gif)
 
-_.. work in progress .._
+
+Using the following command:
+
+
+```bash
+npx revelo render example/hello.txt -o hello.gif
+```
+
+

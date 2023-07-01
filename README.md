@@ -3,9 +3,9 @@
 <img width="375" alt="logo" src="https://user-images.githubusercontent.com/57605485/167906263-89ae1d2f-29b1-4c5b-89da-e755077144c2.png"/>
 </center>
 
-Revelo is a powerful Command Line Interface (CLI) tool designed to rapidly generate striking presentations and videos using just your terminal. It's easy to use and works seamlessly across different operating systems. So, whether you're getting ready for a meeting or working remotely, Revelo allows you to create and deliver engaging presentations on the go.<br/><br/>
+Revelo is a powerful Command Line Interface (CLI) tool designed to rapidly generate striking presentations and videos using just your terminal. It's easy to use and works seamlessly across different operating systems. So, whether you're getting ready for a meeting or working remotely, Revelo allows you to create and deliver engaging presentations on the go.<br/>
 
-Using just a simple text file, Revelo can generate a server-based presentation with your slides, or export your presentation as a PDF, GIF, or MP4 movie. Thanks to its robust version control system, every change you make can be tracked within Github. What's more, it also supports Github workflows allowing you to include self-generating presentations within your repositories.<br/><br/>
+Using just a simple text file, Revelo can generate a server-based presentation with your slides, or export your presentation as a PDF, GIF, or MP4 movie. Since Revelo is based on text files, changes can be tracked with any version control system like Github. What's more, it also supports Github workflows, allowing you to include self-generating presentations within your repositories.<br/><br/>
 
 # Installation-Free Usage
 Run Revelo without even installing it:
